@@ -4,6 +4,18 @@
 
 Open Loop Inboxは、会議、ChatGPT、Codexに残った未完了の約束や作業を回収し、重複・完了・不足情報を照合したうえで、今判断すべき少数のActionだけを提示するプロトタイプです。
 
+## デモサイト
+
+デモサイトはCodex Sitesへ限定公開しています。
+
+公開スラッグは`open-loop-inbox`です。
+
+デモはサンプルデータだけを使用します。
+
+共有用のOG画像とデプロイ用サムネイルは設定していません。
+
+公開状態の詳細は[デモサイト公開状況](./docs/デモサイト公開状況.md)を参照してください。
+
 ## Problem
 
 未完了の作業はToDoアプリだけに存在しません。会議で話した依頼、ChatGPTで調べたいと話したテーマ、Codexへ頼んだ実装など、複数の会話に分散しています。
@@ -77,7 +89,7 @@ Judge SandboxではCodex会話とExecutorを安全なサンプルとして再現
 Plugin本体は `plugins/open-loop-inbox` にあります。
 
 - サンプルモードでは、外部データなしで「7候補 → 3レビュー」を再現します。
-- ライブモードでは、先にスレッド一覧だけを取得し、選択されたスレッドだけを詳しく読み取ります。
+- ライブモードの次版では、起動時に固定Workspace内の限定されたスレッドを自動取得・読込します。ブラウザでの確認操作は不要にします。
 - 実行前にはAction、実行先、影響を提示し、明示承認を要求します。
 - Receiptは対象Workspaceのローカル領域へ保存でき、次回の完了証拠として利用します。
 
@@ -109,7 +121,7 @@ cd companion
 npm start -- --workspace /absolute/path/to/project
 ```
 
-ブラウザで`http://127.0.0.1:4317`を開きます。サーバーはloopbackにだけbindし、起動時に指定したWorkspace以外の履歴を対象にしません。
+ブラウザで`http://127.0.0.1:4317`を開きます。サーバーはloopbackにだけbindし、起動時に指定したWorkspace以外の履歴を対象にしません。自動読込は次版で提供予定です。
 
 ## Safety
 
@@ -152,7 +164,7 @@ npx tsc --noEmit
 - 現段階のJudge Sandboxは事前定義したFallback分析を使用します。
 - Live履歴からのAction抽出・照合はCodex Skillの推論で行い、Judge Siteの決定論的Fallbackとはまだ自動同期していません。
 - Gmail、Calendarは外部サービスではなくDemo Executorです。
-- ChatGPT全履歴の自動取得は対象外です。将来も明示インポートを基本とします。
+- ChatGPT全履歴の無制限な自動取得は対象外です。自動読込は固定Workspace、非アーカイブ、件数・本文サイズ上限の範囲に限定します。
 - 長期的なReceipt永続化と個人最適化は未実装です。
 - Codexデスクトップでは`fullscreen`要求が右サイドバー表示になることを確認済みです。他のMCP Appsホストでは表示位置が異なる可能性があります。
 - Companionは履歴Bridgeまで実装済みで、Actionの自動抽出・照合・スワイプUIとはまだ接続していません。
