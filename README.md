@@ -171,7 +171,6 @@ npm start -- --workspace /absolute/path/to/project
 
 ## 関連文書
 
-- [詳細要件定義書](./docs/open_loop_inbox_requirements_v1_0.md)
 - [プロダクト要件](./docs/%E3%83%97%E3%83%AD%E3%83%80%E3%82%AF%E3%83%88%E8%A6%81%E4%BB%B6.md)
 - [サイト要件](./docs/%E3%82%B5%E3%82%A4%E3%83%88%E8%A6%81%E4%BB%B6.md)
 - [Plugin要件](./docs/%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%E8%A6%81%E4%BB%B6.md)
