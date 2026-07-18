@@ -35,6 +35,7 @@ test("plugin manifest points to the bundled Open Loop skill", async () => {
   assert.equal(manifest.mcpServers, "./.mcp.json");
   assert.match(skill, /name: open-loop-inbox/);
   assert.match(skill, /Never execute before explicit approval/);
+  assert.match(skill, /call the `scan_open_loop_history` MCP Tool/);
 });
 
 test("plugin MCP config starts the bundled UI experiment", async () => {
@@ -59,7 +60,7 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
       jsonrpc: "2.0",
       id: 3,
       method: "resources/read",
-      params: { uri: "ui://open-loop-inbox/action-cards-v5.html" },
+      params: { uri: "ui://open-loop-inbox/action-cards-v6.html" },
     },
     {
       jsonrpc: "2.0",
@@ -92,7 +93,7 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
   const decisionResult = responses.find((response) => response.id === 5).result;
 
   assert.deepEqual(initialize.capabilities, { resources: {}, tools: {} });
-  assert.equal(tool._meta.ui.resourceUri, "ui://open-loop-inbox/action-cards-v5.html");
+  assert.equal(tool._meta.ui.resourceUri, "ui://open-loop-inbox/action-cards-v6.html");
   assert.equal(tool._meta["openai/outputTemplate"], tool._meta.ui.resourceUri);
   assert.equal(tool.annotations.readOnlyHint, true);
   assert.equal(liveScanTool.inputSchema.properties.workspace.type, "string");
@@ -114,6 +115,10 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
   assert.match(resource.text, /左スワイプは「見送る」/);
   assert.match(resource.text, /上スワイプは「指示を追加」/);
   assert.match(resource.text, /練習をスキップ/);
+  assert.match(resource.text, /const onboardingSampleAction = Object\.freeze/);
+  assert.match(resource.text, /actionCardMarkup\(onboardingSampleAction, "01"/);
+  assert.doesNotMatch(resource.text, /actionCardMarkup\(actions\[0\], "01", `onboarding-card practice/);
+  assert.match(resource.text, /PRACTICE MODE/);
   assert.match(resource.text, /record_open_loop_decision/);
   assert.match(resource.text, /data-edit-note/);
   assert.match(resource.text, /サイドバーで開く/);

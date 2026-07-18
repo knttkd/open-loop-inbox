@@ -97,6 +97,15 @@ function isExplicitRequest(text) {
   return /(?:してください|して下さい|お願いします|お願い|頼む|調べ(?:て|る)|まとめ(?:て|る)|実装(?:して|する)|修正(?:して|する)|追加(?:して|する)|作(?:って|る)|確認(?:して|する)|返信(?:して|する)|送(?:って|る)|対応(?:して|する)|TODO)/.test(text);
 }
 
+function requestTextFromUserMessage(text) {
+  const requestMarker = /(?:^|\n)#{1,6}\s*My request for Codex\s*:\s*(?:\n|$)/i;
+  const match = requestMarker.exec(text);
+  if (!match) return text;
+
+  const request = text.slice(match.index + match[0].length).trim();
+  return request || text;
+}
+
 function actionType(text) {
   if (/(?:調べ|リサーチ|research|比較)/i.test(text)) return "Research";
   if (/(?:日程|予定|calendar|カレンダー)/i.test(text)) return "Calendar hold";
@@ -113,8 +122,7 @@ function actionVerb(type) {
 
 function actionSubject(text) {
   return compactText(text
-    .replace(/^(?:[^。！？!?]{0,24}(?:について|を))?/, "")
-    .replace(/(?:してください|して下さい|お願いします|お願い(?:します)?|頼む|調べ(?:て|る)|まとめ(?:て|る)|実装(?:して|する)|修正(?:して|する)|追加(?:して|する)|作(?:って|る)|確認(?:して|する)|返信(?:して|する)|送(?:って|る)|対応(?:して|する))[。！!？?]*$/u, "")
+    .replace(/(?:調べ(?:て|る)|まとめ(?:て|る)|実装(?:して(?:ください|下さい)?|する)|修正(?:して(?:ください|下さい)?|する)|追加(?:して(?:ください|下さい)?|する)|作(?:って|る)|確認(?:して(?:ください|下さい)?|する)|返信(?:して(?:ください|下さい)?|する)|送(?:って|る)|対応(?:して(?:ください|下さい)?|する)|してください|して下さい|お願いします|お願い(?:します)?|頼む)[。！!？?]*$/u, "")
     .trim() || text, 110);
 }
 
@@ -149,16 +157,18 @@ export function buildActionProposals(threads, workspace) {
   for (const thread of threads) {
     for (let messageIndex = 0; messageIndex < thread.evidence.messages.length; messageIndex += 1) {
       const message = thread.evidence.messages[messageIndex];
-      if (message.role !== "user" || !isExplicitRequest(message.text)) continue;
-      const type = actionType(message.text);
-      const subject = actionSubject(message.text);
+      if (message.role !== "user") continue;
+      const request = requestTextFromUserMessage(message.text);
+      if (!isExplicitRequest(request)) continue;
+      const type = actionType(request);
+      const subject = actionSubject(request);
       const preview = previewFor(type, workspace);
-      const missingField = requestHasMissingField(type, message.text);
+      const missingField = requestHasMissingField(type, request);
       const isCompleted = thread.evidence.hasVerification && hasCompletionStatement(thread.evidence.messages, messageIndex);
       if (isCompleted) completed += 1;
       candidates.push({
         id: proposalId(type, subject, thread.id, message.turnId),
-        groupKey: `${type}:${message.text.toLocaleLowerCase("ja-JP")}`,
+        groupKey: `${type}:${request.toLocaleLowerCase("ja-JP")}`,
         title: `${actionVerb(type)}: ${subject}`,
         type,
         owner: "Unknown",
@@ -169,7 +179,7 @@ export function buildActionProposals(threads, workspace) {
         executor: preview.executor,
         effect: preview.effect,
         evidenceSource: "Codex",
-        evidenceSummary: message.text,
+        evidenceSummary: request,
         evidenceRefs: [{ threadId: thread.id, turnId: message.turnId }],
         evidence: [{
           source: "Codex",
@@ -177,7 +187,7 @@ export function buildActionProposals(threads, workspace) {
           turnId: message.turnId,
           occurredAt: message.occurredAt,
           kind: "User message",
-          excerpt: message.text,
+          excerpt: request,
         }],
         executionPreview: {
           executor: preview.executor,

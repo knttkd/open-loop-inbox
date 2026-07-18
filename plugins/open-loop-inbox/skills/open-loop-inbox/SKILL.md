@@ -17,6 +17,8 @@ Never imply access to all ChatGPT history. ChatGPT content must be explicitly im
 
 When the user explicitly asks for the MCP UI experiment, call `show_open_loop_actions` when that Tool is available. Treat it as sample-only output: do not start a live scan, execute an Action, or save a Receipt. Report whether the host rendered cards or used the text fallback.
 
+When the user names `scan_open_loop_history`, asks to review live history in cards/the sidebar/UI, or asks to operate an Approval Inbox visually, call the `scan_open_loop_history` MCP Tool instead of running the shell workflow below. Supply the one explicit absolute Workspace path from the user. That Tool owns the scoped read, returns the MCP UI Resource, and never executes an Action or saves a Receipt. Do not replace its Tool call with a prose-only scan.
+
 ## Live history workflow
 
 1. Resolve `<skill-directory>` to the absolute directory containing this `SKILL.md`. Resolve every referenced script and reference from that directory. Never look for `scripts/` or `references/` relative to the user's workspace.

@@ -125,3 +125,25 @@ test("todo proposals are deterministic, merge duplicates, and require evidence b
   assert.match(first.actions[0].reconciliationReason, /2件の同一成果物/);
   assert.equal(first.completed, 1);
 });
+
+test("uses the request body instead of attached-file metadata for task proposals", () => {
+  const attachedRequest = `# Files mentioned by the user:
+
+## codex-clipboard.png:
+/var/folders/example/codex-clipboard.png
+
+## My request for Codex:
+
+プラグインの実行時、タスク名から何をやっているか分かるように修正してください`;
+
+  const result = buildActionProposals([{
+    id: "thread-with-attachment",
+    evidence: { hasVerification: false, messages: [userMessage(attachedRequest)] },
+  }], workspace);
+
+  assert.equal(result.actions.length, 1);
+  assert.equal(result.actions[0].title, "対応する: プラグインの実行時、タスク名から何をやっているか分かるように");
+  assert.equal(result.actions[0].evidenceSummary, "プラグインの実行時、タスク名から何をやっているか分かるように修正してください");
+  assert.doesNotMatch(result.actions[0].title, /codex-clipboard|var\/folders/);
+  assert.doesNotMatch(result.actions[0].evidenceSummary, /codex-clipboard|var\/folders/);
+});

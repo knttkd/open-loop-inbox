@@ -132,6 +132,8 @@
       .onboarding-card > .onboarding-kicker { color: var(--blue); font: 900 9px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .14em; }
       .onboarding-card h2 { max-width: 430px; margin: 18px 0; font-size: clamp(29px, 5.2vw, 42px); line-height: 1.2; letter-spacing: -.045em; }
       .onboarding-card > p { max-width: 390px; margin: 0; color: #333845; font-size: 13px; line-height: 1.85; }
+      .onboarding-copy { display: grid; gap: 12px; }
+      .onboarding-copy p { max-width: 390px; margin: 0; color: #333845; font-size: 13px; line-height: 1.85; }
       .onboarding-cta, .feedback-next { display: inline-flex; align-items: center; gap: 18px; margin-top: 30px; padding: 9px 9px 9px 21px; border: 0; border-radius: 99px; background: #15181f; color: white; cursor: pointer; font-size: 12px; font-weight: 800; }
       .onboarding-cta b, .feedback-next b { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: white; color: var(--ink); font-size: 16px; }
       .onboarding-card.practice { animation: guide-right 1.75s cubic-bezier(.4, 0, .2, 1) infinite; }
@@ -176,11 +178,28 @@
         "Email draft": { glyph: "E", label: "EMAIL DRAFT", className: "email-draft" },
       };
       const sourceMarks = { Meeting: "M", ChatGPT: "C", Codex: "X" };
+      // This card is intentionally independent from tool output. Onboarding is a
+      // repeatable practice surface, while `actions` contains real scan results.
+      const onboardingSampleAction = Object.freeze({
+        id: "onboarding-demo-cursor-award-research",
+        title: "ハッカソンの受賞例を5件調べて月曜までに共有する",
+        type: "Research",
+        owner: "あなた",
+        due: "7月20日（月）",
+        status: "Ready",
+        risk: "Low",
+        confidence: 97,
+        executor: "Demo Codex Research",
+        effect: "5件の出典付き調査メモを作成します。外部公開はしません。",
+        evidenceSource: "Meeting",
+        evidenceSummary: "ハッカソンの受賞例を5件、月曜までにまとめておこう。",
+        reconciliationReason: "2件を統合。後の会話にある、より具体的な条件を採用しました。",
+      });
       const onboardingSteps = [
-        { direction: null, label: "はじめに", kicker: "OPEN LOOP INBOX", title: "チャット毎に散らばったToDo終わらせましょう。", copy: "セッションを横断して確認し、終わっていないタスクの表示・実行指示がまとめてできます。" },
-        { direction: "right", choice: "approve", label: "右へスワイプ", kicker: "EXECUTE", title: "右スワイプは「実行」", copy: "カードに表示された内容でActionを実行します。追加情報が必要な場合は実行前に確認します。" },
-        { direction: "left", choice: "dismiss", label: "左へスワイプ", kicker: "DISMISS", title: "左スワイプは「見送る」", copy: "今回は対応しない判断として記録します。Actionは実行せず、次のカードへ進みます。" },
-        { direction: "up", choice: "instruction", label: "上へスワイプ", kicker: "ADD INSTRUCTION", title: "上スワイプは「指示を追加」", copy: "推奨候補を選ぶか、自分の言葉で指示を書けます。追加した指示を含めてActionを実行します。" },
+        { direction: null, label: "はじめに", kicker: "OPEN LOOP INBOX", title: "このサービスは？", copy: ["Open Loop Inboxは、Codexの複数スレッドに残った依頼やネクストアクションを回収し、後続の会話と実行結果まで照合するInboxです。", "同じ依頼は一つにまとめ、すでに終わった作業は除外し、条件が足りない作業は一問だけ確認します。", "実行方法としては、マシン上でのローカルホスト、またはCodex内のプラグインを通しての実行を想定しています。"] },
+        { direction: "right", choice: "approve", label: "右へスワイプ", kicker: "EXECUTE", title: "右スワイプは「実行」", copy: ["カードに表示された内容でActionを実行します。", "追加情報が必要な場合は実行前に確認します。"] },
+        { direction: "left", choice: "dismiss", label: "左へスワイプ", kicker: "DISMISS", title: "左スワイプは「見送る」", copy: ["今回は対応しない判断として記録します。", "Actionは実行せず、次のカードへ進みます。", "直後ならUndoできます。"] },
+        { direction: "up", choice: "instruction", label: "上へスワイプ", kicker: "ADD INSTRUCTION", title: "上スワイプは「指示を追加」", copy: ["推奨候補を選ぶか、自分の言葉で指示を書けます。", "追加した指示を含めてActionを実行します。"] },
       ];
       let actions = [];
       let index = 0;
@@ -284,6 +303,9 @@
                   <div class="card-actions"><button class="${expectedClass("dismiss", "dismiss")}" ${actionAttribute}="dismiss" aria-label="${labels.dismiss}" ${disabled}>×</button><button class="${expectedClass("instruction", "instruction")}" ${actionAttribute}="instruction" aria-label="${labels.instruction}" ${disabled}>↑</button>${snooze}<button class="approve-action ${expectedClass("approve")}" ${actionAttribute}="approve" aria-label="${labels.approve}" ${disabled}>✓</button></div>
                 </article>`;
       }
+      function onboardingCopyMarkup(lines) {
+        return `<div class="onboarding-copy">${lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div>`;
+      }
       function renderDeck() {
         const action = actions[index];
         const isLiveHistory = resultSource === "live-codex-history";
@@ -311,21 +333,20 @@
         } else if (onboardingFeedback) {
           const directionClass = step.direction === "left" ? "left" : step.direction === "up" ? "up" : "";
           const nextLabel = onboardingStep === onboardingSteps.length - 1 ? "指示入力を試す" : "次の操作へ";
-          card = `<article class="action-card onboarding-card feedback"><div class="feedback-gesture ${directionClass}">${step.direction === "right" ? "→" : step.direction === "left" ? "←" : "↑"}</div><span class="onboarding-kicker">${step.kicker}</span><h2>${step.title}</h2><p>${step.copy}</p><div class="feedback-note"><b>✓</b><span>これは練習です。Actionの実行やReceiptの作成は行っていません。</span></div><button class="feedback-next ${directionClass}" data-onboarding-next type="button"><span>${nextLabel}</span><b>→</b></button></article>`;
+          card = `<article class="action-card onboarding-card feedback"><div class="feedback-gesture ${directionClass}">${step.direction === "right" ? "→" : step.direction === "left" ? "←" : "↑"}</div><span class="onboarding-kicker">${step.kicker}</span><h2>${step.title}</h2>${onboardingCopyMarkup(step.copy)}<div class="feedback-note"><b>✓</b><span>これは練習です。Actionの実行やReceiptの作成は行っていません。</span></div><button class="feedback-next ${directionClass}" data-onboarding-next type="button"><span>${nextLabel}</span><b>→</b></button></article>`;
         } else if (!step.direction) {
-          card = `<article class="action-card onboarding-card intro"><span class="onboarding-kicker">${step.kicker}</span><h2>${step.title}</h2><p>${step.copy}</p><button class="onboarding-cta" data-onboarding-start type="button"><span>操作を試す</span><b>→</b></button></article>`;
+          card = `<article class="action-card onboarding-card intro"><span class="onboarding-kicker">${step.kicker}</span><h2>${step.title}</h2>${onboardingCopyMarkup(step.copy)}<button class="onboarding-cta" data-onboarding-start type="button"><span>操作を試す</span><b>→</b></button></article>`;
         } else {
           const arrow = step.direction === "right" ? "→" : step.direction === "left" ? "←" : "↑";
-          card = `<div class="swipe-coach"><span>${arrow}</span><b>${step.label}してみてください</b></div>${actionCardMarkup(actions[0], "01", `onboarding-card practice guide-${step.direction}`, step.choice)}`;
+          card = `<div class="swipe-coach"><span>${arrow}</span><b>${step.label}してみてください</b></div>${actionCardMarkup(onboardingSampleAction, "01", `onboarding-card practice guide-${step.direction}`, step.choice)}`;
         }
-        const sourceLabel = resultSource === "live-codex-history" ? "LIVE HISTORY" : "SAMPLE MODE";
-        root.innerHTML = `<section class="app-shell"><header class="topbar"><div class="brand"><span class="brand-mark">OL</span>OPEN LOOP INBOX</div><span class="demo-pill"><i></i> ${sourceLabel}</span></header><section class="review-view onboarding-view"><header class="practice-heading"><p class="eyebrow"><span>02</span> PRACTICE WITH A REAL CARD</p><h1>まずは試してみましょう</h1><div class="practice-progress"><span>案内 ${onboardingStep + 1}/${onboardingSteps.length}</span><i><b style="width: ${(onboardingStep / (onboardingSteps.length - 1)) * 100}%"></b></i></div></header><div class="deck onboarding-deck">${card}</div><footer class="onboarding-footer"><span>練習ではActionやReceiptは変更されません</span><button data-onboarding-skip type="button">練習をスキップ</button></footer></section></section>`;
+        root.innerHTML = `<section class="app-shell"><header class="topbar"><div class="brand"><span class="brand-mark">OL</span>OPEN LOOP INBOX</div><span class="demo-pill"><i></i> PRACTICE MODE</span></header><section class="review-view onboarding-view"><header class="practice-heading"><p class="eyebrow"><span>02</span> PRACTICE WITH A REAL CARD</p><h1>まずは試してみましょう</h1><div class="practice-progress"><span>案内 ${onboardingStep + 1}/${onboardingSteps.length}</span><i><b style="width: ${(onboardingStep / (onboardingSteps.length - 1)) * 100}%"></b></i></div></header><div class="deck onboarding-deck">${card}</div><footer class="onboarding-footer"><span>練習ではActionやReceiptは変更されません</span><button data-onboarding-skip type="button">練習をスキップ</button></footer></section></section>`;
       }
       function render() {
         document.documentElement.dataset.displayMode = displayMode;
         if (displayMode === "inline") renderLauncher();
-        else if (actions.length === 0 || index >= actions.length) renderEmpty();
         else if (!onboardingComplete) renderOnboarding();
+        else if (actions.length === 0 || index >= actions.length) renderEmpty();
         else renderDeck();
         scheduleHeightUpdate();
       }

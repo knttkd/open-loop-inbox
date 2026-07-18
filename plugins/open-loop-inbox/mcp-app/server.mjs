@@ -7,7 +7,7 @@ export const SERVER_VERSION = "0.5.0";
 export const TOOL_NAME = "show_open_loop_actions";
 export const LIVE_SCAN_TOOL_NAME = "scan_open_loop_history";
 export const DECISION_TOOL_NAME = "record_open_loop_decision";
-export const RESOURCE_URI = "ui://open-loop-inbox/action-cards-v5.html";
+export const RESOURCE_URI = "ui://open-loop-inbox/action-cards-v6.html";
 export const RESOURCE_MIME_TYPE = "text/html;profile=mcp-app";
 
 const actions = Object.freeze([

@@ -47,6 +47,12 @@ node --test tests/plugin.test.mjs
 Use $open-loop-inbox. scan_open_loop_history で /absolute/path/to/workspace の最近のCodex履歴を読み、未完了Actionだけを表示して。
 ```
 
+カードUIを必ず表示するよう、MCP Tool名とサイドバーを明示する場合は次の依頼を使います。
+
+```text
+open-loop-inbox-ui の scan_open_loop_history を呼び出して、/absolute/path/to/workspace の未完了Actionをサイドバーのカードで表示して。
+```
+
 明示承認なしに、候補の実行やReceipt保存は行いません。
 
 カードUIが表示されなくてもTool呼出しが成功し、3件のActionがテキストで表示されれば、MCP接続とFallbackは成功です。UI表示可否はホスト能力の検証結果として別に扱います。
