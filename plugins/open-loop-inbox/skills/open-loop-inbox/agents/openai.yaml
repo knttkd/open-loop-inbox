@@ -1,0 +1,4 @@
+interface:
+  display_name: "Open Loop Inbox"
+  short_description: "会話を横断して未完了Actionを根拠付きで照合・実行する"
+  default_prompt: "Use $open-loop-inbox to scan the selected conversations and present only evidence-backed open loops for review."

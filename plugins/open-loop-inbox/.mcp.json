@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "open-loop-inbox-ui": {
+      "title": "Open Loop Inbox UI Experiment",
+      "description": "Show evidence-backed Action cards through an MCP Apps UI resource, with a structured text fallback.",
+      "cwd": ".",
+      "command": "node",
+      "args": ["./mcp-app/server.mjs"]
+    }
+  }
+}

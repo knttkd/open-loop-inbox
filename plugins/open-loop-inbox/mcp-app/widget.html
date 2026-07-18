@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ja" data-display-mode="inline">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --ink: #1d2130;
+        --muted: #6f7684;
+        --blue: #4a63d8;
+        --orange: #df6b45;
+        --green: #3f9e7d;
+        --gold: #a8791a;
+        --stroke: rgba(255, 255, 255, .82);
+        --hairline: rgba(29, 33, 48, .10);
+        font-family: Inter, "Hiragino Sans", "Yu Gothic", ui-sans-serif, system-ui, sans-serif;
+        color: var(--ink);
+      }
+      * { box-sizing: border-box; }
+      html, body { width: 100%; min-height: 100%; }
+      body {
+        margin: 0;
+        background: linear-gradient(115deg, #cfe4d3 0%, #c7d3ee 36%, #d8d1ec 64%, #d9e6d7 100%);
+      }
+      button { color: inherit; font: inherit; }
+      button:focus-visible, summary:focus-visible { outline: 3px solid #5b74e8; outline-offset: 3px; }
+      main { width: 100%; min-height: 100%; padding: clamp(10px, 2.2vw, 20px); }
+      html[data-display-mode="inline"] body { background: transparent; }
+      html[data-display-mode="inline"] main { padding: 8px 0; }
+      .visually-hidden {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+      }
+
+      .launcher-button {
+        width: 100%; min-height: 56px; display: inline-flex; align-items: center; justify-content: space-between;
+        gap: 18px; padding: 8px 8px 8px 23px; border: 0; border-radius: 999px;
+        background: #15181f; color: white; box-shadow: 0 12px 28px rgba(29, 33, 48, .24);
+        cursor: pointer; font-size: 13px; font-weight: 700; text-align: left;
+      }
+      .launcher-button b { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: white; color: #15181f; font-size: 17px; }
+      .launcher-button:hover { transform: translateY(-1px); }
+      .launcher-button[data-state="unsupported"] { background: #4d5361; }
+      .launcher-button:disabled, .mode-button:disabled { cursor: wait; opacity: .62; }
+
+      .app-shell {
+        width: 100%; overflow: hidden; border: 1px solid var(--stroke); border-radius: 28px;
+        background: rgba(253, 254, 255, .48); box-shadow: 0 28px 70px rgba(70, 80, 120, .20);
+        backdrop-filter: blur(18px);
+      }
+      .topbar { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 22px; border-bottom: 1px solid rgba(255, 255, 255, .65); }
+      .brand { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+      .brand-mark { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 10px; background: var(--ink); color: white; font: 700 9px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0; }
+      .demo-pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border: 1px solid var(--stroke); border-radius: 99px; background: rgba(255, 255, 255, .5); color: var(--muted); font: 700 8px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .09em; white-space: nowrap; }
+      .demo-pill i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+      .review-view { padding: clamp(22px, 4vw, 44px) clamp(16px, 4vw, 42px) 28px; }
+      .review-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+      .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 9px; color: var(--muted); font: 700 9px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .14em; }
+      .eyebrow span { width: 25px; height: 25px; display: inline-grid; place-items: center; border: 1px solid var(--stroke); border-radius: 50%; background: rgba(255, 255, 255, .55); color: var(--ink); }
+      .review-heading h1 { margin: 0; font-size: clamp(27px, 5.5vw, 46px); line-height: 1.04; letter-spacing: -.05em; }
+      .review-heading h1 em { color: var(--blue); font-style: normal; }
+      .review-summary { padding: 10px 13px; border: 1px solid var(--stroke); border-radius: 15px; background: rgba(255, 255, 255, .55); color: var(--muted); font: 9px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; white-space: nowrap; }
+      .review-summary b { display: block; color: var(--ink); font-size: 17px; line-height: 1.15; }
+
+      .deck { position: relative; width: 100%; min-height: 570px; display: grid; place-items: start center; }
+      .action-card { position: relative; z-index: 2; width: 100%; min-height: 550px; padding: clamp(22px, 4vw, 30px); overflow: hidden; border: 1px solid var(--stroke); border-radius: 26px; box-shadow: 0 26px 65px rgba(70, 80, 120, .20); user-select: none; }
+      .card-type-research { background: rgba(210, 225, 250, .86); }
+      .card-type-calendar-hold { background: rgba(250, 228, 200, .88); }
+      .card-type-email-draft { background: rgba(208, 240, 222, .88); }
+      .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+      .type-heading, .card-badges { display: flex; align-items: center; gap: 7px; }
+      .type-glyph { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 14px; background: rgba(255, 255, 255, .9); color: var(--blue); box-shadow: 0 6px 18px rgba(60, 70, 110, .14); font: 800 14px ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .type-chip, .status-badge, .risk-badge { padding: 7px 10px; border-radius: 99px; font: 800 8px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .07em; white-space: nowrap; }
+      .type-chip { color: white; }
+      .type-research { background: #5b74e8; color: white; }
+      .type-calendar-hold { background: #df8a4c; color: white; }
+      .type-email-draft { background: #3f9e7d; color: white; }
+      .type-glyph.type-research { color: #5b74e8; background: rgba(255, 255, 255, .9); }
+      .type-glyph.type-calendar-hold { color: #df8a4c; background: rgba(255, 255, 255, .9); }
+      .type-glyph.type-email-draft { color: #3f9e7d; background: rgba(255, 255, 255, .9); }
+      .status-badge { background: rgba(29, 33, 48, .85); color: white; }
+      .status-badge.needs { background: rgba(255, 220, 206, .95); color: #9f3219; }
+      .risk-badge { border: 1px solid rgba(29, 33, 48, .15); color: var(--muted); }
+      .card-number { margin-top: 22px; color: rgba(29, 33, 48, .28); font: 800 24px ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .action-card h2 { margin: 7px 0 18px; font-size: clamp(23px, 4.6vw, 32px); line-height: 1.25; letter-spacing: -.035em; }
+      .preview-box { padding: 15px; border-radius: 16px; background: rgba(255, 255, 255, .72); }
+      .preview-box span, .preview-box strong { display: block; }
+      .preview-box span, .meta-row small, .evidence-box small { color: var(--muted); font: 8px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; }
+      .preview-box span { margin-bottom: 5px; }
+      .preview-box strong { font-size: 12px; }
+      .preview-box p { margin: 5px 0 0; color: #4d5361; font-size: 11px; line-height: 1.55; }
+      .meta-row { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 8px; margin: 15px 0; }
+      .meta-row b { display: block; margin-top: 5px; overflow-wrap: anywhere; font-size: 11px; }
+      .evidence-box { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid rgba(255, 255, 255, .9); border-radius: 14px; background: rgba(255, 255, 255, .60); color: var(--ink); text-align: left; }
+      .evidence-box > span:nth-child(2) { flex: 1; min-width: 0; }
+      .source-icon { width: 31px; height: 31px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: #df8a4c; color: white; font: 700 9px ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .evidence-box q { display: block; margin-top: 4px; overflow: hidden; color: var(--ink); font-size: 10px; line-height: 1.55; text-overflow: ellipsis; white-space: nowrap; quotes: none; }
+      .evidence-box summary { width: 100%; display: flex; align-items: center; gap: 10px; list-style: none; cursor: pointer; }
+      .evidence-box summary::-webkit-details-marker { display: none; }
+      .evidence-box[open] q { overflow: visible; white-space: normal; }
+      .evidence-box[open] .evidence-copy { padding-bottom: 3px; }
+      .evidence-box .toggle { color: var(--blue); font-size: 15px; font-weight: 800; }
+      .reconcile-note { display: flex; gap: 8px; margin: 12px 0 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+      .reconcile-note span { color: var(--blue); font-weight: 800; }
+      .card-actions { display: flex; justify-content: center; gap: 14px; margin-top: 16px; }
+      .card-actions button { width: 46px; height: 46px; border: 1px solid var(--stroke); border-radius: 50%; background: rgba(255, 255, 255, .85); box-shadow: 0 6px 16px rgba(60, 70, 110, .14); cursor: pointer; font-size: 18px; }
+      .card-actions button:first-child { color: var(--orange); }
+      .card-actions button:hover { transform: translateY(-2px); }
+      .card-actions .approve-action { border: 0; background: #15181f; color: white; box-shadow: 0 8px 20px rgba(21, 24, 31, .35); }
+      .deck-hint { margin: 14px 0 0; color: var(--muted); font: 9px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
+      .mode-button { margin: 20px auto 0; display: flex; align-items: center; gap: 8px; padding: 9px 14px; border: 1px solid rgba(29, 33, 48, .18); border-radius: 99px; background: rgba(255, 255, 255, .60); color: var(--ink); cursor: pointer; font-size: 10px; font-weight: 700; }
+      .onboarding-view { padding-top: 26px; }
+      .practice-heading { text-align: center; }
+      .practice-heading .eyebrow { justify-content: center; margin-bottom: 10px; }
+      .practice-heading h1 { margin-bottom: 14px; }
+      .practice-progress { width: min(250px, 100%); margin: 0 auto 16px; color: var(--muted); font: 9px ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
+      .practice-progress i { display: block; height: 4px; margin-top: 8px; overflow: hidden; border-radius: 99px; background: rgba(29, 33, 48, .1); }
+      .practice-progress b { display: block; height: 100%; border-radius: inherit; background: var(--blue); transition: width .2s ease; }
+      .onboarding-deck { min-height: 590px; }
+      .onboarding-card { background: rgba(255, 255, 255, .92); color: var(--ink); text-align: center; }
+      .onboarding-card.intro, .onboarding-card.feedback, .onboarding-card.instruction { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .onboarding-card > .onboarding-kicker { color: var(--blue); font: 900 9px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .14em; }
+      .onboarding-card h2 { max-width: 430px; margin: 18px 0; font-size: clamp(29px, 5.2vw, 42px); line-height: 1.2; letter-spacing: -.045em; }
+      .onboarding-card > p { max-width: 390px; margin: 0; color: #333845; font-size: 13px; line-height: 1.85; }
+      .onboarding-cta, .feedback-next { display: inline-flex; align-items: center; gap: 18px; margin-top: 30px; padding: 9px 9px 9px 21px; border: 0; border-radius: 99px; background: #15181f; color: white; cursor: pointer; font-size: 12px; font-weight: 800; }
+      .onboarding-cta b, .feedback-next b { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: white; color: var(--ink); font-size: 16px; }
+      .onboarding-card.practice { animation: guide-right 1.75s cubic-bezier(.4, 0, .2, 1) infinite; }
+      .onboarding-card.practice.guide-left { animation-name: guide-left; }
+      .onboarding-card.practice.guide-up { animation-name: guide-up; }
+      .onboarding-card.practice .card-actions button { opacity: .42; pointer-events: none; }
+      .onboarding-card.practice .card-actions button.expected-action { opacity: 1; pointer-events: auto; box-shadow: 0 0 0 5px rgba(91, 116, 232, .13), 0 8px 20px rgba(74, 99, 216, .22); }
+      .onboarding-card.practice .card-actions button.expected-action.dismiss { box-shadow: 0 0 0 5px rgba(223, 107, 69, .12), 0 8px 20px rgba(223, 107, 69, .20); }
+      .onboarding-card.practice .card-actions button.expected-action.instruction { box-shadow: 0 0 0 5px rgba(168, 121, 26, .12), 0 8px 20px rgba(168, 121, 26, .20); }
+      .swipe-coach { position: absolute; z-index: 6; top: 0; left: 50%; display: flex; align-items: center; gap: 11px; padding: 10px 19px 10px 10px; border: 2px solid rgba(91, 116, 232, .78); border-radius: 99px; background: #fff; color: var(--ink); box-shadow: 0 0 0 5px rgba(91, 116, 232, .12), 0 0 28px rgba(91, 116, 232, .46), 0 12px 28px rgba(60, 70, 110, .18); pointer-events: none; transform: translateX(-50%); }
+      .swipe-coach span { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 50%; background: rgba(214, 226, 255, .9); color: var(--ink); font-size: 20px; font-weight: 900; }
+      .swipe-coach b { white-space: nowrap; color: #15181f; font-size: 12px; }
+      .feedback-gesture { width: 68px; height: 68px; display: grid; place-items: center; margin: 0 auto 18px; border-radius: 22px; background: rgba(214, 226, 255, .9); color: var(--blue); box-shadow: 0 14px 32px rgba(74, 99, 216, .2); font-size: 32px; font-weight: 900; }
+      .feedback-gesture.left { background: rgba(255, 226, 216, .92); color: var(--orange); box-shadow: 0 14px 32px rgba(223, 107, 69, .18); }
+      .feedback-gesture.up { background: rgba(255, 243, 205, .95); color: var(--gold); box-shadow: 0 14px 32px rgba(168, 121, 26, .20); }
+      .feedback-note { display: flex; align-items: center; gap: 9px; max-width: 330px; margin-top: 22px; padding: 11px 14px; border-radius: 13px; background: rgba(29, 33, 48, .05); color: var(--muted); font-size: 10px; line-height: 1.5; text-align: left; }
+      .feedback-note b { color: var(--green); font-size: 15px; }
+      .feedback-next { margin-top: 20px; background: var(--blue); }
+      .feedback-next.left { background: var(--orange); }
+      .feedback-next.up { background: var(--green); }
+      .instruction-options { width: min(390px, 100%); display: grid; gap: 8px; margin-top: 23px; }
+      .instruction-options button { display: flex; align-items: center; justify-content: space-between; padding: 13px 15px; border: 1px solid rgba(29, 33, 48, .12); border-radius: 15px; background: rgba(255, 255, 255, .7); cursor: pointer; color: var(--ink); font-size: 11px; text-align: left; }
+      .instruction-options button:hover, .instruction-options button.selected { border-color: var(--blue); background: rgba(199, 216, 246, .45); color: var(--blue); }
+      .instruction-options b { color: var(--blue); }
+      .onboarding-footer { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 10px; color: var(--muted); font-size: 10px; }
+      .onboarding-footer button { padding: 7px 12px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 10px; text-decoration: underline; text-underline-offset: 4px; }
+      .empty { min-height: 390px; display: grid; place-content: center; justify-items: center; padding: 32px; text-align: center; }
+      .empty .complete-mark { width: 62px; height: 62px; display: grid; place-items: center; margin-bottom: 16px; border-radius: 50%; background: rgba(197, 238, 216, .9); color: #26713c; font-size: 26px; }
+      .empty h1 { margin: 0; font-size: clamp(31px, 6vw, 48px); letter-spacing: -.05em; }
+      .empty p { max-width: 380px; margin: 9px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+      @media (prefers-reduced-motion: no-preference) { .action-card { animation: fade-up .32s ease both; } @keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } @keyframes guide-right { 0%, 100% { transform: translateX(0) rotate(0); } 45%, 65% { transform: translateX(26px) rotate(2.5deg); } } @keyframes guide-left { 0%, 100% { transform: translateX(0) rotate(0); } 45%, 65% { transform: translateX(-26px) rotate(-2.5deg); } } @keyframes guide-up { 0%, 100% { transform: translateY(0); } 45%, 65% { transform: translateY(-24px); } } }
+      @media (max-width: 520px) { .topbar { padding: 0 15px; } .brand { font-size: 10px; } .demo-pill { display: none; } .review-heading { display: block; } .review-summary { display: inline-block; margin-top: 13px; text-align: left; } .card-header { flex-wrap: wrap; } .card-badges { margin-left: 49px; } .deck { min-height: 590px; } }
+    </style>
+  </head>
+  <body>
+    <main id="root" aria-live="polite"></main>
+    <script type="module">
+      const root = document.getElementById("root");
+      const typeInfo = {
+        Research: { glyph: "R", label: "RESEARCH", className: "research" },
+        "Calendar hold": { glyph: "C", label: "CALENDAR HOLD", className: "calendar-hold" },
+        "Email draft": { glyph: "E", label: "EMAIL DRAFT", className: "email-draft" },
+      };
+      const sourceMarks = { Meeting: "M", ChatGPT: "C", Codex: "X" };
+      const onboardingSteps = [
+        { direction: null, label: "はじめに", kicker: "OPEN LOOP INBOX", title: "チャット毎に散らばったToDo終わらせましょう。", copy: "セッションを横断して確認し、終わっていないタスクの表示・実行指示がまとめてできます。" },
+        { direction: "right", choice: "approve", label: "右へスワイプ", kicker: "EXECUTE", title: "右スワイプは「実行」", copy: "カードに表示された内容でActionを実行します。追加情報が必要な場合は実行前に確認します。" },
+        { direction: "left", choice: "dismiss", label: "左へスワイプ", kicker: "DISMISS", title: "左スワイプは「見送る」", copy: "今回は対応しない判断として記録します。Actionは実行せず、次のカードへ進みます。" },
+        { direction: "up", choice: "instruction", label: "上へスワイプ", kicker: "ADD INSTRUCTION", title: "上スワイプは「指示を追加」", copy: "推奨候補を選ぶか、自分の言葉で指示を書けます。追加した指示を含めてActionを実行します。" },
+      ];
+      let actions = [];
+      let index = 0;
+      let resultSource = "mcp-ui-experiment";
+      let resultSummary = null;
+      let onboardingStep = 0;
+      let onboardingFeedback = false;
+      let onboardingInstruction = false;
+      let onboardingComplete = false;
+      let onboardingDraft = "";
+      let displayMode = window.openai?.displayMode ?? "inline";
+      let availableDisplayModes = [];
+      let hostConnected = false;
+      let modeStatus = { state: "", text: "" };
+      let modeRequestPending = false;
+      let requestSequence = 0;
+      let resizeFrame = 0;
+      let lastReportedSize = "";
+      const pendingRequests = new Map();
+
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
+      const postToHost = (message) => window.parent.postMessage(message, "*");
+      const notifyHost = (method, params = {}) => postToHost({ jsonrpc: "2.0", method, params });
+
+      function requestHost(method, params, timeout = 1800) {
+        const id = `open-loop-inbox-${++requestSequence}`;
+        postToHost({ jsonrpc: "2.0", id, method, params });
+        return new Promise((resolve, reject) => {
+          const timer = window.setTimeout(() => { pendingRequests.delete(id); reject(new Error(`${method} timed out`)); }, timeout);
+          pendingRequests.set(id, { resolve, reject, timer });
+        });
+      }
+      function applyHostContext(context = {}) {
+        if (context.displayMode) displayMode = context.displayMode;
+        if (Array.isArray(context.availableDisplayModes)) availableDisplayModes = context.availableDisplayModes;
+        render();
+      }
+      function measureAndNotifyHeight() {
+        resizeFrame = 0;
+        const bounds = document.body.getBoundingClientRect();
+        const width = Math.ceil(bounds.width);
+        const height = Math.ceil(bounds.height);
+        const nextSize = `${width}x${height}`;
+        if (nextSize === lastReportedSize) return;
+        lastReportedSize = nextSize;
+        if (hostConnected) notifyHost("ui/notifications/size-changed", { width, height });
+        window.openai?.notifyIntrinsicHeight?.(height);
+      }
+      function scheduleHeightUpdate() { if (resizeFrame) cancelAnimationFrame(resizeFrame); resizeFrame = requestAnimationFrame(measureAndNotifyHeight); }
+      async function connectMcpApp() {
+        try {
+          const result = await requestHost("ui/initialize", { protocolVersion: "2026-01-26", appInfo: { name: "Open Loop Inbox", version: "0.4.0" }, appCapabilities: { availableDisplayModes: ["inline", "fullscreen"] } });
+          hostConnected = true; lastReportedSize = ""; notifyHost("ui/notifications/initialized"); applyHostContext(result?.hostContext);
+        } catch { hostConnected = false; scheduleHeightUpdate(); }
+      }
+      async function requestDisplayMode() {
+        const targetMode = displayMode === "fullscreen" ? "inline" : "fullscreen";
+        modeRequestPending = true;
+        modeStatus = { state: "", text: targetMode === "fullscreen" ? "サイドバーを開いています…" : "チャットへ戻しています…" };
+        render();
+        try {
+          if (availableDisplayModes.length > 0 && !availableDisplayModes.includes(targetMode)) throw new Error("Display mode unavailable");
+          const result = window.openai?.requestDisplayMode ? await window.openai.requestDisplayMode({ mode: targetMode }) : hostConnected ? await requestHost("ui/request-display-mode", { mode: targetMode }) : (() => { throw new Error("Display mode API unavailable"); })();
+          displayMode = result?.mode ?? targetMode;
+          modeStatus = displayMode === targetMode ? { state: "success", text: displayMode === "fullscreen" ? "サイドバーで開きました。" : "チャットへ戻りました。" } : { state: "unsupported", text: "Codexは表示切替を許可しませんでした。" };
+        } catch { modeStatus = { state: "unsupported", text: targetMode === "fullscreen" ? "サイドバーを開けませんでした。もう一度試す" : "チャットへ戻せませんでした。もう一度試す" }; }
+        modeRequestPending = false;
+        render();
+      }
+      function renderLauncher() {
+        const label = modeRequestPending ? "サイドバーを開いています…" : modeStatus.state === "unsupported" ? "サイドバーを開けませんでした · 再試行" : "サイドバーで開く";
+        root.innerHTML = `<section class="launcher"><button class="launcher-button" data-display-mode data-state="${escapeHtml(modeStatus.state)}" type="button" ${modeRequestPending ? "disabled" : ""}><span>${label}</span><b>↗</b></button><span class="visually-hidden" role="status">${escapeHtml(modeStatus.text)}</span></section>`;
+      }
+      function renderEmpty() {
+        root.innerHTML = `<section class="app-shell empty"><div class="complete-mark">✓</div><p class="eyebrow"><span>✓</span> OPEN LOOP INBOX</p><h1>確認完了</h1><p>この実験用Actionはすべて確認しました。実行・Receipt保存は行っていません。</p><button class="mode-button" data-display-mode type="button" ${modeRequestPending ? "disabled" : ""}>← チャットに戻す</button></section>`;
+      }
+      function actionCardMarkup(action, number, extraClass = "", onboardingChoice = "") {
+        const type = typeInfo[action.type] ?? { glyph: "A", label: "ACTION", className: "research" };
+        const sourceMark = sourceMarks[action.evidenceSource] ?? "•";
+        const needs = action.status === "Needs input" ? "needs" : "";
+        const actionAttribute = onboardingChoice ? "data-onboarding-choice" : "data-choice";
+        const labels = onboardingChoice
+          ? { dismiss: "見送る（操作練習）", instruction: "指示を追加（操作練習）", approve: "実行（操作練習）" }
+          : { dismiss: "見送る（実験用に次のカードへ進む）", instruction: "指示を追加（実験用に次のカードへ進む）", approve: "実行を承認（実験用に次のカードへ進む）" };
+        const expectedClass = (choice, className = "") => onboardingChoice === choice ? `expected-action ${className}` : className;
+        return `
+                <article class="action-card card-type-${type.className} ${extraClass}">
+                  <header class="card-header"><div class="type-heading"><span class="type-glyph type-${type.className}">${type.glyph}</span><span class="type-chip type-${type.className}">${type.label}</span></div><div class="card-badges"><span class="status-badge ${needs}">${escapeHtml(action.status)}</span><span class="risk-badge">${escapeHtml(action.risk)} risk</span></div></header>
+                  <div class="card-number">${number}</div><h2>${escapeHtml(action.title)}</h2>
+                  <div class="preview-box"><span>実行すると</span><strong>${escapeHtml(action.executor)}</strong><p>${escapeHtml(action.effect)}</p></div>
+                  <div class="meta-row"><div><small>OWNER</small><b>${escapeHtml(action.owner)}</b></div><div><small>DUE</small><b>${escapeHtml(action.due)}</b></div><div><small>CONFIDENCE</small><b>${escapeHtml(action.confidence)}%</b></div></div>
+                  <details class="evidence-box"><summary><span class="source-icon">${escapeHtml(sourceMark)}</span><span class="evidence-copy"><small>STRONGEST EVIDENCE · ${escapeHtml(action.evidenceSource)}</small><q>${escapeHtml(action.evidenceSummary)}</q></span><b class="toggle">＋</b></summary></details>
+                  <p class="reconcile-note"><span>↳</span>${escapeHtml(action.reconciliationReason)}</p>
+                  <div class="card-actions"><button class="${expectedClass("dismiss", "dismiss")}" ${actionAttribute}="dismiss" aria-label="${labels.dismiss}">×</button><button class="${expectedClass("instruction", "instruction")}" ${actionAttribute}="instruction" aria-label="${labels.instruction}">↑</button><button class="approve-action ${expectedClass("approve")}" ${actionAttribute}="approve" aria-label="${labels.approve}">✓</button></div>
+                </article>`;
+      }
+      function renderDeck() {
+        const action = actions[index];
+        const isLiveHistory = resultSource === "live-codex-history";
+        const summary = resultSummary
+          ? `${resultSummary.sources} → ${resultSummary.candidates} → ${resultSummary.review}`
+          : "5 → 7 → 3";
+        root.innerHTML = `
+          <section class="app-shell">
+            <header class="topbar"><div class="brand"><span class="brand-mark">OL</span>OPEN LOOP INBOX</div><span class="demo-pill"><i></i> ${isLiveHistory ? "LIVE HISTORY" : "SAMPLE MODE"}</span></header>
+            <section class="review-view">
+              <header class="review-heading"><div><p class="eyebrow"><span>✓</span> APPROVAL INBOX</p><h1>判断するのは、<em>あと${actions.length - index}件。</em></h1></div><aside class="review-summary"><b>${summary}</b>SOURCES · CANDIDATES · REVIEW</aside></header>
+              <div class="deck">${actionCardMarkup(action, `0${index + 1}`)}</div>
+              <p class="deck-hint">このMCP UI実験は読み取り専用です。カード操作は実行・保存を行いません。</p>
+              <button class="mode-button" data-display-mode type="button" ${modeRequestPending ? "disabled" : ""}>← チャットに戻す</button>
+            </section>
+          </section>`;
+      }
+      function renderOnboarding() {
+        const step = onboardingSteps[onboardingStep];
+        let card = "";
+        if (onboardingInstruction) {
+          card = `<article class="action-card onboarding-card instruction"><span class="onboarding-kicker">ADD INSTRUCTION</span><h2>指示を追加してみましょう</h2><p>推奨候補を選んでください。この練習では実際のActionは実行されません。</p><div class="instruction-options"><button data-onboarding-suggestion="出典URLを必ず付ける" class="${onboardingDraft === "出典URLを必ず付ける" ? "selected" : ""}"><span>出典URLを必ず付ける</span><b>＋</b></button><button data-onboarding-suggestion="重要な3点を先に要約する" class="${onboardingDraft === "重要な3点を先に要約する" ? "selected" : ""}"><span>重要な3点を先に要約する</span><b>＋</b></button><button data-onboarding-suggestion="比較表を最後に追加する" class="${onboardingDraft === "比較表を最後に追加する" ? "selected" : ""}"><span>比較表を最後に追加する</span><b>＋</b></button></div><button class="onboarding-cta" data-onboarding-finish type="button" ${onboardingDraft ? "" : "disabled"}><span>練習を完了する</span><b>→</b></button></article>`;
+        } else if (onboardingFeedback) {
+          const directionClass = step.direction === "left" ? "left" : step.direction === "up" ? "up" : "";
+          const nextLabel = onboardingStep === onboardingSteps.length - 1 ? "指示入力を試す" : "次の操作へ";
+          card = `<article class="action-card onboarding-card feedback"><div class="feedback-gesture ${directionClass}">${step.direction === "right" ? "→" : step.direction === "left" ? "←" : "↑"}</div><span class="onboarding-kicker">${step.kicker}</span><h2>${step.title}</h2><p>${step.copy}</p><div class="feedback-note"><b>✓</b><span>これは練習です。Actionの実行やReceiptの作成は行っていません。</span></div><button class="feedback-next ${directionClass}" data-onboarding-next type="button"><span>${nextLabel}</span><b>→</b></button></article>`;
+        } else if (!step.direction) {
+          card = `<article class="action-card onboarding-card intro"><span class="onboarding-kicker">${step.kicker}</span><h2>${step.title}</h2><p>${step.copy}</p><button class="onboarding-cta" data-onboarding-start type="button"><span>操作を試す</span><b>→</b></button></article>`;
+        } else {
+          const arrow = step.direction === "right" ? "→" : step.direction === "left" ? "←" : "↑";
+          card = `<div class="swipe-coach"><span>${arrow}</span><b>${step.label}してみてください</b></div>${actionCardMarkup(actions[0], "01", `onboarding-card practice guide-${step.direction}`, step.choice)}`;
+        }
+        const sourceLabel = resultSource === "live-codex-history" ? "LIVE HISTORY" : "SAMPLE MODE";
+        root.innerHTML = `<section class="app-shell"><header class="topbar"><div class="brand"><span class="brand-mark">OL</span>OPEN LOOP INBOX</div><span class="demo-pill"><i></i> ${sourceLabel}</span></header><section class="review-view onboarding-view"><header class="practice-heading"><p class="eyebrow"><span>02</span> PRACTICE WITH A REAL CARD</p><h1>まずは試してみましょう</h1><div class="practice-progress"><span>案内 ${onboardingStep + 1}/${onboardingSteps.length}</span><i><b style="width: ${(onboardingStep / (onboardingSteps.length - 1)) * 100}%"></b></i></div></header><div class="deck onboarding-deck">${card}</div><footer class="onboarding-footer"><span>練習ではActionやReceiptは変更されません</span><button data-onboarding-skip type="button">練習をスキップ</button></footer></section></section>`;
+      }
+      function render() {
+        document.documentElement.dataset.displayMode = displayMode;
+        if (displayMode === "inline") renderLauncher();
+        else if (actions.length === 0 || index >= actions.length) renderEmpty();
+        else if (!onboardingComplete) renderOnboarding();
+        else renderDeck();
+        scheduleHeightUpdate();
+      }
+      function acceptToolResult(result) { const output = result?.structuredContent; const nextActions = output?.actions; if (!Array.isArray(nextActions)) return; actions = nextActions; resultSource = output.source ?? "mcp-ui-experiment"; resultSummary = output.summary ?? null; index = 0; onboardingStep = 0; onboardingFeedback = false; onboardingInstruction = false; onboardingComplete = false; onboardingDraft = ""; render(); }
+      root.addEventListener("click", (event) => {
+        if (event.target.closest("button[data-display-mode]")) { void requestDisplayMode(); return; }
+        if (event.target.closest("button[data-onboarding-start]")) { onboardingStep = 1; render(); return; }
+        if (event.target.closest("button[data-onboarding-skip]")) { onboardingComplete = true; render(); return; }
+        if (event.target.closest("button[data-onboarding-next]")) { onboardingFeedback = false; if (onboardingStep === onboardingSteps.length - 1) onboardingInstruction = true; else onboardingStep += 1; render(); return; }
+        if (event.target.closest("button[data-onboarding-finish]")) { onboardingComplete = true; render(); return; }
+        const suggestion = event.target.closest("button[data-onboarding-suggestion]");
+        if (suggestion) { onboardingDraft = suggestion.dataset.onboardingSuggestion ?? ""; render(); return; }
+        const onboardingAction = event.target.closest("button[data-onboarding-choice]");
+        if (onboardingAction) { if (onboardingAction.dataset.onboardingChoice === onboardingSteps[onboardingStep].choice) { onboardingFeedback = true; render(); } return; }
+        if (event.target.closest("button[data-choice]")) { index += 1; render(); }
+      });
+      root.addEventListener("toggle", scheduleHeightUpdate, true);
+      window.addEventListener("message", (event) => {
+        if (event.source !== window.parent) return;
+        const message = event.data;
+        if (!message || message.jsonrpc !== "2.0") return;
+        if (message.id && pendingRequests.has(message.id)) { const request = pendingRequests.get(message.id); pendingRequests.delete(message.id); clearTimeout(request.timer); if (message.error) request.reject(new Error(message.error.message ?? "Host request failed")); else request.resolve(message.result); return; }
+        if (message.method === "ui/notifications/host-context-changed") applyHostContext(message.params);
+        if (message.method === "ui/notifications/tool-result") acceptToolResult(message.params);
+      }, { passive: true });
+      window.addEventListener("openai:set_globals", (event) => { const globals = event.detail?.globals; if (globals?.displayMode) displayMode = globals.displayMode; render(); }, { passive: true });
+      new ResizeObserver(scheduleHeightUpdate).observe(document.body);
+      if (window.openai?.toolOutput) acceptToolResult({ structuredContent: window.openai.toolOutput });
+      void connectMcpApp();
+      render();
+    </script>
+  </body>
+</html>

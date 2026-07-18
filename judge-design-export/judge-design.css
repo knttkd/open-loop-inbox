@@ -1,0 +1,245 @@
+:root {
+  --oli-ink: #1d2130;
+  --oli-muted: #6f7684;
+  --oli-blue: #4a63d8;
+  --oli-orange: #df6b45;
+  --oli-green: #3f9e7d;
+  --oli-gold: #a8791a;
+  --oli-stroke: rgba(255, 255, 255, 0.82);
+  --oli-hairline: rgba(29, 33, 48, 0.1);
+  --oli-font-display: "Hanken Grotesk", "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+  --oli-font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --oli-shadow: 0 28px 70px rgba(70, 80, 120, 0.2);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; color: var(--oli-ink); background: #bfc9d9; font-family: var(--oli-font-display); }
+button, textarea { color: inherit; font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 3px solid #5b74e8; outline-offset: 3px; }
+
+.oli-catalog-nav { position: sticky; z-index: 50; top: 0; min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 10px max(18px, calc((100% - 1340px) / 2)); background: rgba(21, 24, 31, 0.92); color: white; backdrop-filter: blur(16px); font: 700 10px var(--oli-font-mono); letter-spacing: 0.08em; }
+.oli-catalog-nav > div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.oli-catalog-nav a { padding: 7px 10px; border-radius: 99px; color: rgba(255,255,255,.72); text-decoration: none; }
+.oli-catalog-nav a:hover { background: rgba(255,255,255,.1); color: white; }
+.oli-catalog { padding: 32px 24px 88px; background: linear-gradient(115deg, #cfe4d3 0%, #c7d3ee 36%, #d8d1ec 64%, #d9e6d7 100%); }
+.oli-sample { width: min(1340px, 100%); margin: 0 auto 72px; scroll-margin-top: 80px; }
+.oli-sample-label { margin: 0 0 10px 18px; color: rgba(29,33,48,.62); font: 800 10px var(--oli-font-mono); letter-spacing: .14em; }
+
+.oli-shell { min-height: 760px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--oli-stroke); border-radius: 36px; background: rgba(253,254,255,.48); box-shadow: 0 30px 80px rgba(80,90,130,.14); backdrop-filter: blur(22px); }
+.oli-topbar { min-height: 76px; display: flex; align-items: center; justify-content: space-between; padding: 0 36px; border-bottom: 1px solid rgba(255,255,255,.65); }
+.oli-brand { display: flex; align-items: center; gap: 12px; color: inherit; font-size: 13px; font-weight: 800; letter-spacing: .12em; text-decoration: none; }
+.oli-brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 12px; background: var(--oli-ink); color: white; font-size: 10px; letter-spacing: 0; }
+.oli-top-actions { display: flex; align-items: center; gap: 12px; }
+.oli-sandbox { display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px; border: 1px solid var(--oli-stroke); border-radius: 99px; background: rgba(255,255,255,.5); color: var(--oli-muted); font: 700 10px var(--oli-font-mono); letter-spacing: .09em; }
+.oli-sandbox i { width: 6px; height: 6px; border-radius: 50%; background: var(--oli-green); }
+.oli-reset { padding: 9px 18px; border: 0; border-radius: 99px; background: rgba(29,33,48,.82); color: white; font-size: 11px; font-weight: 700; }
+.oli-footer { min-height: 46px; display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 0 36px; border-top: 1px solid rgba(255,255,255,.65); color: var(--oli-muted); font: 8px var(--oli-font-mono); letter-spacing: .08em; }
+
+.oli-start-view { flex: 1; display: grid; grid-template-columns: 1.5fr .8fr; gap: 48px; align-items: center; padding: 64px; }
+.oli-start-copy { display: contents; }
+.oli-start-copy > :not(.oli-promise) { grid-column: 1; }
+.oli-eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 26px; color: var(--oli-muted); font: 700 10px/1.4 var(--oli-font-mono); letter-spacing: .14em; }
+.oli-eyebrow span { width: 28px; height: 28px; display: inline-grid; place-items: center; border: 1px solid var(--oli-stroke); border-radius: 50%; background: rgba(255,255,255,.55); color: var(--oli-ink); }
+.oli-start-view h1 { max-width: 760px; margin: 0; font-size: clamp(48px, 6vw, 88px); line-height: 1.02; letter-spacing: -.05em; }
+.oli-start-view h1 em { color: var(--oli-blue); font-style: normal; }
+.oli-lead { max-width: 560px; margin: 30px 0 28px; color: #4d5361; font-size: 16px; line-height: 1.9; }
+.oli-primary { min-width: 290px; display: inline-flex; align-items: center; justify-content: space-between; gap: 32px; padding: 10px 10px 10px 24px; border: 0; border-radius: 99px; background: #15181f; color: white; font-size: 14px; font-weight: 700; }
+.oli-primary b { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: white; color: #15181f; font-size: 18px; }
+.oli-note { margin: 14px 0 0; color: var(--oli-muted); font: 10px var(--oli-font-mono); letter-spacing: .06em; }
+.oli-sources { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 52px; }
+.oli-sources > div { display: grid; grid-template-columns: 38px auto; column-gap: 11px; align-items: center; padding: 11px 18px 11px 11px; border: 1px solid var(--oli-stroke); border-radius: 99px; background: rgba(255,255,255,.55); }
+.oli-sources > i { width: 26px; height: 1px; background: rgba(29,33,48,.2); }
+.oli-sources strong { font-size: 12px; }
+.oli-sources small { color: var(--oli-muted); font: 9px var(--oli-font-mono); }
+.oli-source { width: 42px; height: 42px; display: grid; place-items: center; grid-row: 1 / 3; flex: 0 0 auto; border-radius: 50%; background: var(--oli-ink); color: white; font: 700 12px var(--oli-font-mono); }
+.oli-chatgpt { background: #2f9d7c; }
+.oli-codex { background: #5b74e8; }
+.oli-meeting { background: #df8a4c; }
+.oli-promise { grid-column: 2; grid-row: 1 / 7; justify-self: end; width: 230px; padding: 28px; border: 1px solid var(--oli-stroke); border-radius: 28px; background: rgba(255,255,255,.6); box-shadow: 0 24px 55px rgba(80,90,130,.18); }
+.oli-promise span { color: var(--oli-muted); font: 800 9px var(--oli-font-mono); letter-spacing: .12em; }
+.oli-promise strong { display: block; margin-top: 18px; font-size: 64px; line-height: .85; letter-spacing: -.05em; }
+.oli-promise strong:last-of-type { color: var(--oli-blue); }
+.oli-promise p { margin: 6px 0 0; color: var(--oli-muted); font: 10px var(--oli-font-mono); text-transform: uppercase; }
+.oli-promise i { display: block; margin: 14px 0 4px; color: var(--oli-blue); font-size: 20px; font-style: normal; }
+
+.oli-workspace { flex: 1; min-height: 680px; display: flex; flex-direction: column; align-items: center; padding: 26px 5% 48px; }
+.oli-centered-heading { display: grid; justify-items: center; text-align: center; }
+.oli-centered-heading .oli-eyebrow { margin-bottom: 10px; }
+.oli-centered-heading h2 { margin: 0 0 14px; font-size: 38px; letter-spacing: -.04em; }
+.oli-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 10px 16px 10px 20px; border: 1px solid var(--oli-stroke); border-radius: 99px; background: rgba(255,255,255,.6); font-size: 12px; font-weight: 700; }
+.oli-progress i { width: 54px; height: 4px; overflow: hidden; border-radius: 99px; background: rgba(29,33,48,.1); }
+.oli-progress b { display: block; height: 100%; border-radius: inherit; background: var(--oli-blue); }
+.oli-deck { position: relative; width: min(560px, 100%); min-height: 590px; display: grid; place-items: center; perspective: 1400px; }
+.oli-card { position: absolute; z-index: 2; width: min(100%, 500px); min-height: 560px; padding: 26px 28px 24px; overflow: hidden; border: 1px solid var(--oli-stroke); border-radius: 26px; box-shadow: var(--oli-shadow); }
+.oli-card-research { background: rgba(210,225,250,.9); }
+.oli-card-behind { z-index: 1; transform: translateY(16px) scale(.96); background: rgba(255,255,255,.35); box-shadow: none; }
+.oli-swipe-coach { position: absolute; z-index: 6; top: 0; left: 50%; display: flex; align-items: center; gap: 11px; padding: 10px 19px 10px 10px; border: 2px solid rgba(91,116,232,.78); border-radius: 99px; background: white; box-shadow: 0 0 0 5px rgba(91,116,232,.12), 0 0 28px rgba(91,116,232,.46); transform: translateX(-50%); }
+.oli-swipe-coach span { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 50%; background: rgba(214,226,255,.9); color: var(--oli-blue); font-size: 20px; }
+.oli-swipe-coach b { white-space: nowrap; font-size: 12px; }
+.oli-card-header { display: flex; align-items: center; justify-content: space-between; }
+.oli-type-heading { display: flex; align-items: center; gap: 10px; }
+.oli-type-glyph { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: rgba(255,255,255,.9); box-shadow: 0 6px 18px rgba(60,70,110,.14); color: #5b74e8; font-size: 15px; font-weight: 800; }
+.oli-chip, .oli-status, .oli-risk { display: inline-block; padding: 8px 12px; border-radius: 99px; font: 800 8px var(--oli-font-mono); letter-spacing: .07em; }
+.oli-chip-research { background: #5b74e8; color: white; }
+.oli-status { background: rgba(29,33,48,.85); color: white; }
+.oli-risk { margin-left: 6px; border: 1px solid rgba(29,33,48,.15); color: var(--oli-muted); }
+.oli-card-number { display: block; margin-top: 22px; color: rgba(29,33,48,.28); font: 800 26px var(--oli-font-mono); }
+.oli-card h3 { margin: 8px 0 20px; font-size: 29px; line-height: 1.25; letter-spacing: -.03em; }
+.oli-preview { padding: 16px; border-radius: 16px; background: rgba(255,255,255,.72); }
+.oli-preview small, .oli-preview strong { display: block; }
+.oli-preview small { margin-bottom: 5px; color: var(--oli-muted); font-size: 9px; }
+.oli-preview strong { font-size: 12px; }
+.oli-preview p { margin: 5px 0 0; color: #4d5361; font-size: 11px; line-height: 1.55; }
+.oli-meta { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 8px; margin: 16px 0; }
+.oli-meta small { display: block; color: var(--oli-muted); font: 8px var(--oli-font-mono); }
+.oli-meta b { display: block; margin-top: 5px; font-size: 11px; }
+.oli-evidence-row { width: 100%; display: flex; align-items: center; gap: 11px; padding: 12px; border: 1px solid rgba(255,255,255,.9); border-radius: 14px; background: rgba(255,255,255,.6); text-align: left; }
+.oli-evidence-row .oli-source { width: 31px; height: 31px; font-size: 9px; }
+.oli-evidence-row > span:nth-child(2) { flex: 1; min-width: 0; }
+.oli-evidence-row small { display: block; color: var(--oli-muted); font: 8px var(--oli-font-mono); }
+.oli-evidence-row q { display: block; margin-top: 4px; overflow: hidden; font-size: 10px; line-height: 1.55; text-overflow: ellipsis; white-space: nowrap; quotes: none; }
+.oli-reconcile { margin: 12px 0 0; color: var(--oli-muted); font-size: 9px; line-height: 1.5; }
+.oli-card-actions { display: flex; justify-content: center; gap: 14px; margin-top: 16px; }
+.oli-card-actions button { width: 46px; height: 46px; border: 1px solid var(--oli-stroke); border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 6px 16px rgba(60,70,110,.14); font-size: 18px; }
+.oli-card-actions button:first-child { color: var(--oli-orange); }
+.oli-card-actions .oli-execute { border: 0; background: #15181f; color: white; }
+.oli-deck-hint { position: absolute; bottom: -4px; color: var(--oli-muted); font: 9px var(--oli-font-mono); }
+.oli-practice-note { margin: 2px 0 0; color: var(--oli-muted); font-size: 10px; }
+.oli-help { width: 42px; height: 42px; border: 1px solid var(--oli-stroke); border-radius: 50%; background: rgba(255,255,255,.7); color: var(--oli-blue); font-size: 17px; font-weight: 800; }
+
+.oli-loading-view { flex: 1; width: min(960px, 86%); display: grid; grid-template-columns: 190px 1fr; align-content: center; gap: 24px 48px; margin: 0 auto; padding: 60px 0; }
+.oli-orbit { width: 170px; height: 170px; display: grid; place-items: center; position: relative; border: 1px solid var(--oli-stroke); border-radius: 50%; background: rgba(255,255,255,.5); }
+.oli-orbit::before, .oli-orbit::after { content: ""; position: absolute; border: 2px solid #5b74e8; border-radius: 50%; }
+.oli-orbit::before { width: 125px; height: 125px; border-left-color: transparent; }
+.oli-orbit::after { width: 80px; height: 80px; border-right-color: transparent; }
+.oli-orbit span { font: 800 18px var(--oli-font-mono); }
+.oli-loading-view h2 { margin: 0; font-size: 52px; letter-spacing: -.04em; }
+.oli-loading-current { color: var(--oli-blue); }
+.oli-loading-list { grid-column: 2; padding: 6px 20px; border: 1px solid var(--oli-stroke); border-radius: 22px; background: rgba(255,255,255,.5); }
+.oli-loading-list > div { min-height: 56px; display: grid; grid-template-columns: 40px 1fr auto; align-items: center; border-bottom: 1px solid rgba(29,33,48,.07); opacity: .45; }
+.oli-loading-list > div:last-child { border: 0; }
+.oli-loading-list .is-done { opacity: 1; }
+.oli-loading-list b { font: 800 11px var(--oli-font-mono); }
+.oli-loading-list .is-done b { color: var(--oli-blue); }
+.oli-loading-list span { font-size: 13px; }
+.oli-loading-list small { color: var(--oli-muted); font: 9px var(--oli-font-mono); }
+
+.oli-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 500px)); justify-content: center; gap: 32px; padding: 52px; border: 1px solid var(--oli-stroke); border-radius: 36px; background: rgba(253,254,255,.48); box-shadow: 0 30px 80px rgba(80,90,130,.14); }
+.oli-input-card { position: relative; min-height: 620px; padding: 44px 42px 30px; border: 1px solid rgba(255,255,255,.98); border-radius: 26px; background: linear-gradient(150deg, rgba(255,255,255,.98), rgba(226,234,251,.96) 55%, rgba(228,244,234,.96)); box-shadow: var(--oli-shadow); text-align: center; }
+.oli-close { position: absolute; top: 16px; right: 18px; width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgba(29,33,48,.06); font-size: 18px; }
+.oli-input-kicker { color: var(--oli-orange); font: 800 9px var(--oli-font-mono); letter-spacing: .1em; }
+.oli-input-kicker.is-blue { color: var(--oli-blue); }
+.oli-input-card h2 { margin: 13px 0 10px; font-size: 27px; letter-spacing: -.03em; }
+.oli-input-card > p { margin: 0; color: var(--oli-muted); font-size: 12px; line-height: 1.6; }
+.oli-suggestion-block { margin-top: 26px; text-align: left; }
+.oli-suggestion-block > small, .oli-input > span { color: var(--oli-muted); font: 700 8px var(--oli-font-mono); letter-spacing: .08em; }
+.oli-suggestions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.oli-suggestions button { padding: 9px 11px; border: 1px solid rgba(29,33,48,.12); border-radius: 99px; background: rgba(255,255,255,.58); color: #4d5361; font-size: 10px; }
+.oli-suggestions span { color: var(--oli-blue); font-weight: 800; }
+.oli-options { display: grid; gap: 8px; margin-top: 26px; }
+.oli-options button { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border: 1px solid rgba(29,33,48,.12); border-radius: 16px; background: rgba(255,255,255,.7); font-size: 12px; }
+.oli-options b { color: var(--oli-blue); font-size: 10px; }
+.oli-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 18px; color: var(--oli-muted); font: 9px var(--oli-font-mono); }
+.oli-divider::before, .oli-divider::after { content: ""; flex: 1; height: 1px; background: var(--oli-hairline); }
+.oli-input { display: grid; gap: 8px; margin-top: 18px; text-align: left; }
+.oli-input textarea { width: 100%; min-height: 72px; resize: vertical; padding: 13px 14px; border: 1px solid rgba(29,33,48,.12); border-radius: 16px; background: rgba(255,255,255,.72); font: 12px/1.6 var(--oli-font-display); }
+.oli-input small { justify-self: end; color: var(--oli-muted); font: 8px var(--oli-font-mono); }
+.oli-submit { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding: 10px 10px 10px 18px; border: 0; border-radius: 99px; background: #15181f; color: white; font-size: 12px; font-weight: 700; }
+.oli-submit b { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: white; color: #15181f; }
+
+.oli-dialog-stage { display: grid; place-items: center; padding: 48px 24px; border: 1px solid var(--oli-stroke); border-radius: 36px; background: rgba(40,45,60,.36); backdrop-filter: blur(10px); }
+.oli-dialog { width: min(620px, 100%); max-height: 780px; overflow: auto; padding: 30px; border: 1px solid rgba(255,255,255,.95); border-radius: 28px; background: linear-gradient(150deg, rgba(255,255,255,.95), rgba(226,234,251,.92) 55%, rgba(228,244,234,.92)); box-shadow: 0 40px 90px rgba(30,35,55,.35); }
+.oli-dialog > header { display: flex; align-items: flex-start; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid var(--oli-hairline); }
+.oli-dialog small { color: var(--oli-muted); font: 8px var(--oli-font-mono); letter-spacing: .1em; }
+.oli-dialog h2 { margin: 5px 0 0; font-size: 26px; letter-spacing: -.03em; }
+.oli-dialog h3 { margin: 5px 0 8px; font-size: 15px; }
+.oli-dialog > header button { width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgba(29,33,48,.06); font-size: 18px; }
+.oli-summaries { display: grid; gap: 8px; padding: 20px 0 12px; }
+.oli-summaries section { padding: 18px; border-radius: 18px; background: rgba(199,216,246,.4); }
+.oli-summaries section:nth-child(2) { background: rgba(29,33,48,.04); }
+.oli-summaries p, .oli-reason p, .oli-payload p { margin: 0; color: #4d5361; font-size: 11px; line-height: 1.75; }
+.oli-reason { margin-bottom: 22px; padding: 14px 16px; border-left: 3px solid var(--oli-blue); border-radius: 14px; background: rgba(199,216,246,.25); }
+.oli-reason b { color: var(--oli-blue); font: 800 8px var(--oli-font-mono); }
+.oli-reason p { margin-top: 6px; }
+.oli-timeline { display: grid; gap: 6px; }
+.oli-timeline article { display: grid; grid-template-columns: 42px 1fr; gap: 13px; padding: 16px; border-radius: 16px; background: rgba(29,33,48,.035); }
+.oli-timeline article > div { display: grid; gap: 4px; justify-items: start; }
+.oli-timeline strong, .oli-timeline q { font-size: 11px; line-height: 1.6; }
+.oli-timeline b { padding: 4px 8px; border-radius: 99px; background: rgba(199,216,246,.7); color: #304bbf; font: 700 7px var(--oli-font-mono); }
+.oli-payload { margin-top: 18px; padding: 17px; border: 1px solid rgba(29,33,48,.1); border-radius: 16px; }
+.oli-payload strong { display: block; margin: 5px 0; font-size: 12px; }
+
+.oli-complete { flex: 1; width: min(860px, 88%); margin: 0 auto; padding: 56px 0 80px; text-align: center; }
+.oli-complete .oli-eyebrow { justify-content: center; }
+.oli-complete-mark { width: 66px; height: 66px; display: grid; place-items: center; margin: 0 auto 18px; border-radius: 50%; background: rgba(197,238,216,.9); color: #26713c; box-shadow: 0 14px 34px rgba(63,158,125,.3); font-size: 28px; }
+.oli-complete > h2 { margin: 0; font-size: 64px; letter-spacing: -.05em; }
+.oli-complete > p { color: var(--oli-muted); }
+.oli-receipts { display: grid; gap: 10px; margin: 40px 0 22px; text-align: left; }
+.oli-receipts article { display: grid; grid-template-columns: 42px 1fr auto; gap: 15px; align-items: center; padding: 17px 20px; border: 1px solid var(--oli-stroke); border-radius: 20px; background: rgba(255,255,255,.6); }
+.oli-receipts article > span { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 12px; background: rgba(29,33,48,.07); color: var(--oli-muted); }
+.oli-receipts article > span.is-success { background: rgba(197,238,216,.95); color: #26713c; }
+.oli-receipts small { color: var(--oli-muted); font: 8px var(--oli-font-mono); }
+.oli-receipts h3 { margin: 3px 0; font-size: 13px; }
+.oli-receipts p { margin: 0; color: var(--oli-muted); font-size: 10px; }
+.oli-receipts article > b { padding: 7px 12px; border: 1px solid rgba(29,33,48,.12); border-radius: 99px; color: #4d5361; font: 8px var(--oli-font-mono); }
+.oli-completed-proof { padding: 18px; border: 1px solid rgba(63,158,125,.25); border-radius: 18px; background: rgba(224,243,229,.56); text-align: left; }
+.oli-completed-proof small { display: block; color: #43734d; font: 8px var(--oli-font-mono); letter-spacing: .08em; }
+.oli-completed-proof strong { display: block; margin-top: 6px; font-size: 12px; }
+.oli-completed-proof p { margin: 4px 0 0; color: var(--oli-muted); font-size: 10px; }
+.oli-complete-actions { display: flex; justify-content: center; gap: 12px; margin-top: 28px; }
+.oli-secondary { padding: 14px 22px; border: 1px solid rgba(29,33,48,.25); border-radius: 99px; background: rgba(255,255,255,.55); font-size: 12px; }
+.oli-primary.is-compact { min-width: 230px; }
+
+@media (max-width: 900px) {
+  .oli-catalog-nav { align-items: flex-start; flex-direction: column; }
+  .oli-catalog-nav > div { justify-content: flex-start; }
+  .oli-start-view { grid-template-columns: 1fr; padding: 52px 34px; }
+  .oli-start-copy { display: block; }
+  .oli-start-copy > * { grid-column: auto; }
+  .oli-promise { display: none; }
+  .oli-pair { grid-template-columns: minmax(0, 500px); padding: 30px 18px; }
+}
+
+@media (max-width: 620px) {
+  .oli-catalog { padding: 24px 0 64px; }
+  .oli-sample-label { margin-left: 14px; }
+  .oli-shell, .oli-pair, .oli-dialog-stage { border-radius: 0; }
+  .oli-topbar { min-height: 62px; padding: 0 18px; }
+  .oli-brand { font-size: 10px; }
+  .oli-sandbox { display: none; }
+  .oli-footer { padding: 0 18px; }
+  .oli-footer span:last-child { display: none; }
+  .oli-start-view { display: block; padding: 52px 22px 38px; }
+  .oli-start-view h1 { font-size: clamp(48px, 15vw, 70px); }
+  .oli-primary { width: 100%; min-width: 0; }
+  .oli-sources > i { display: none; }
+  .oli-sources > div { flex: 1; min-width: 135px; }
+  .oli-workspace { padding: 22px 14px 44px; }
+  .oli-centered-heading h2 { font-size: 25px; }
+  .oli-centered-heading .oli-eyebrow { display: none; }
+  .oli-card { min-height: 555px; padding: 22px 20px; border-radius: 24px; }
+  .oli-card h3 { font-size: 27px; }
+  .oli-chip { display: none; }
+  .oli-loading-view { width: 88%; grid-template-columns: 1fr; gap: 25px; padding: 44px 0; }
+  .oli-orbit { width: 112px; height: 112px; }
+  .oli-orbit::before { width: 82px; height: 82px; }
+  .oli-orbit::after { width: 52px; height: 52px; }
+  .oli-loading-view h2 { font-size: 38px; }
+  .oli-loading-list { grid-column: 1; padding: 6px 14px; }
+  .oli-input-card { min-height: 0; padding: 42px 20px 28px; }
+  .oli-suggestions { display: grid; }
+  .oli-suggestions button { border-radius: 14px; text-align: left; }
+  .oli-dialog-stage { padding: 24px 12px; }
+  .oli-dialog { padding: 22px 18px; border-radius: 24px; }
+  .oli-complete { width: 90%; padding-top: 48px; }
+  .oli-complete > h2 { font-size: 44px; }
+  .oli-receipts article { grid-template-columns: 36px 1fr; }
+  .oli-receipts article > b { display: none; }
+  .oli-complete-actions { flex-direction: column-reverse; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Open Loop Inbox judge site static design export" />
+    <title>Open Loop Inbox — Judge UI design export</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./judge-design.css" />
+  </head>
+  <body>
+    <nav class="oli-catalog-nav" aria-label="画面一覧">
+      <strong>JUDGE UI / STATIC EXPORT</strong>
+      <div>
+        <a href="#start">Start</a>
+        <a href="#onboarding">Onboarding</a>
+        <a href="#loading">Loading</a>
+        <a href="#review">Review</a>
+        <a href="#instruction">Instruction</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#complete">Receipt</a>
+      </div>
+    </nav>
+
+    <main class="oli-catalog">
+      <section id="start" class="oli-sample" aria-labelledby="start-label">
+        <p id="start-label" class="oli-sample-label">01 / START</p>
+        <div class="oli-shell">
+          <header class="oli-topbar">
+            <a class="oli-brand" href="#start"><span class="oli-brand-mark">OL</span><span>OPEN LOOP INBOX</span></a>
+            <span class="oli-sandbox"><i></i> JUDGE SANDBOX</span>
+          </header>
+          <section class="oli-start-view">
+            <div class="oli-start-copy">
+              <p class="oli-eyebrow"><span>01</span> RECOVER · RECONCILE · DECIDE · EXECUTE</p>
+              <h1>会話に残った<br /><em>やり残し</em>だけを。</h1>
+              <p class="oli-lead">会議、ChatGPT、Codexを横断して、重複と完了済みを整理。あなたが今判断すべきActionだけを、一つのInboxに集めます。</p>
+              <button class="oli-primary" type="button"><span>サンプルの1日を試す</span><b>→</b></button>
+              <p class="oli-note">ログイン不要 · 実データ不使用 · 約2分</p>
+              <div class="oli-sources" aria-label="読み込むサンプルソース">
+                <div><span class="oli-source oli-meeting">M</span><strong>Meeting</strong><small>1 transcript</small></div>
+                <i></i>
+                <div><span class="oli-source oli-chatgpt">C</span><strong>ChatGPT</strong><small>2 conversations</small></div>
+                <i></i>
+                <div><span class="oli-source oli-codex">X</span><strong>Codex</strong><small>2 threads</small></div>
+              </div>
+            </div>
+            <aside class="oli-promise">
+              <span>THE PROMISE</span><strong>7</strong><p>candidate actions</p><i>↓</i><strong>3</strong><p>decisions that matter</p>
+            </aside>
+          </section>
+          <footer class="oli-footer"><span>EVERY OPEN LOOP, ONE INBOX.</span><span>Sample data only · No external writes</span></footer>
+        </div>
+      </section>
+
+      <section id="onboarding" class="oli-sample" aria-labelledby="onboarding-label">
+        <p id="onboarding-label" class="oli-sample-label">02 / ONBOARDING</p>
+        <div class="oli-shell">
+          <header class="oli-topbar">
+            <a class="oli-brand" href="#start"><span class="oli-brand-mark">OL</span><span>OPEN LOOP INBOX</span></a>
+            <div class="oli-top-actions"><span class="oli-sandbox"><i></i> JUDGE SANDBOX</span><button class="oli-reset">Reset</button></div>
+          </header>
+          <section class="oli-workspace">
+            <div class="oli-centered-heading">
+              <p class="oli-eyebrow"><span>02</span> PRACTICE WITH A REAL CARD</p>
+              <h2>まずは試してみましょう</h2>
+              <div class="oli-progress"><span>案内 2/4</span><i><b style="width: 25%"></b></i></div>
+            </div>
+            <div class="oli-deck">
+              <div class="oli-card oli-card-behind" aria-hidden="true"></div>
+              <div class="oli-swipe-coach"><span>→</span><b>右へスワイプしてみてください</b></div>
+              <article class="oli-card oli-card-research">
+                <header class="oli-card-header">
+                  <div class="oli-type-heading"><span class="oli-type-glyph">R</span><span class="oli-chip oli-chip-research">RESEARCH</span></div>
+                  <div><span class="oli-status">Ready</span><span class="oli-risk">Low risk</span></div>
+                </header>
+                <span class="oli-card-number">01</span>
+                <h3>ハッカソンの受賞例を5件調べて月曜までに共有する</h3>
+                <div class="oli-preview"><small>実行すると</small><strong>Demo Codex Research</strong><p>5件の出典付き調査メモを作成します。外部公開はしません。</p></div>
+                <div class="oli-meta"><span><small>OWNER</small><b>あなた</b></span><span><small>DUE</small><b>7月20日（月）</b></span><span><small>CONFIDENCE</small><b>97%</b></span></div>
+                <button class="oli-evidence-row"><span class="oli-source oli-meeting">M</span><span><small>STRONGEST EVIDENCE · Meeting</small><q>ハッカソンの受賞例を5件、月曜までにまとめておこう。</q></span><b>＋</b></button>
+                <p class="oli-reconcile">↳ 2件を統合。後の会話にある具体的な件数と期限を採用しました。</p>
+                <div class="oli-card-actions"><button aria-label="見送る">×</button><button aria-label="指示を追加">↑</button><button class="oli-execute" aria-label="実行">✓</button></div>
+              </article>
+            </div>
+            <p class="oli-practice-note">練習ではActionやReceiptは変更されません　<u>練習をスキップ</u></p>
+          </section>
+          <footer class="oli-footer"><span>EVERY OPEN LOOP, ONE INBOX.</span><span>Sample data only · No external writes</span></footer>
+        </div>
+      </section>
+
+      <section id="loading" class="oli-sample" aria-labelledby="loading-label">
+        <p id="loading-label" class="oli-sample-label">03 / ANALYZING</p>
+        <div class="oli-shell">
+          <header class="oli-topbar">
+            <a class="oli-brand" href="#start"><span class="oli-brand-mark">OL</span><span>OPEN LOOP INBOX</span></a>
+            <button class="oli-reset">Reset</button>
+          </header>
+          <section class="oli-loading-view">
+            <div class="oli-orbit"><span>3/5</span></div>
+            <div><p class="oli-eyebrow"><span>03</span> LOADING OPEN LOOPS</p><h2>タスクを読み込んでいます</h2><p class="oli-loading-current">デモ説明文の推敲</p></div>
+            <div class="oli-loading-list">
+              <div class="is-done"><b>✓</b><span>Build Week 作戦会議</span><small>LOADED</small></div>
+              <div class="is-done"><b>✓</b><span>ハッカソンの勝ち筋を相談</span><small>LOADED</small></div>
+              <div class="is-done"><b>✓</b><span>デモ説明文の推敲</span><small>LOADED</small></div>
+              <div><b>04</b><span>Action Deck accessibility</span><small>WAITING</small></div>
+              <div><b>05</b><span>雑談メモ</span><small>WAITING</small></div>
+            </div>
+          </section>
+          <footer class="oli-footer"><span>EVERY OPEN LOOP, ONE INBOX.</span><span>Sample data only · No external writes</span></footer>
+        </div>
+      </section>
+
+      <section id="review" class="oli-sample" aria-labelledby="review-label">
+        <p id="review-label" class="oli-sample-label">04 / ACTION REVIEW</p>
+        <div class="oli-shell">
+          <header class="oli-topbar">
+            <a class="oli-brand" href="#start"><span class="oli-brand-mark">OL</span><span>OPEN LOOP INBOX</span></a>
+            <div class="oli-top-actions"><span class="oli-sandbox"><i></i> JUDGE SANDBOX</span><button class="oli-reset">Reset</button></div>
+          </header>
+          <section class="oli-workspace">
+            <div class="oli-progress"><span>残り 3/3</span><i><b style="width: 0%"></b></i></div>
+            <div class="oli-deck">
+              <div class="oli-card oli-card-behind" aria-hidden="true"></div>
+              <article class="oli-card oli-card-research">
+                <header class="oli-card-header">
+                  <div class="oli-type-heading"><span class="oli-type-glyph">R</span><span class="oli-chip oli-chip-research">RESEARCH</span></div>
+                  <div><span class="oli-status">Ready</span><span class="oli-risk">Low risk</span></div>
+                </header>
+                <span class="oli-card-number">01</span>
+                <h3>ハッカソンの受賞例を5件調べて月曜までに共有する</h3>
+                <div class="oli-preview"><small>実行すると</small><strong>Demo Codex Research</strong><p>5件の出典付き調査メモを作成します。外部公開はしません。</p></div>
+                <div class="oli-meta"><span><small>OWNER</small><b>あなた</b></span><span><small>DUE</small><b>7月20日（月）</b></span><span><small>CONFIDENCE</small><b>97%</b></span></div>
+                <button class="oli-evidence-row"><span class="oli-source oli-meeting">M</span><span><small>STRONGEST EVIDENCE · Meeting</small><q>ハッカソンの受賞例を5件、月曜までにまとめておこう。</q></span><b>＋</b></button>
+                <p class="oli-reconcile">↳ 2件を統合。後の会話にある具体的な件数と期限を採用しました。</p>
+                <div class="oli-card-actions"><button aria-label="見送る">×</button><button aria-label="指示を追加">↑</button><button class="oli-execute" aria-label="実行">✓</button></div>
+              </article>
+              <p class="oli-deck-hint">カードをスワイプ、またはボタン・矢印キーで操作</p>
+            </div>
+            <button class="oli-help" aria-label="操作説明">?</button>
+          </section>
+          <footer class="oli-footer"><span>EVERY OPEN LOOP, ONE INBOX.</span><span>Sample data only · No external writes</span></footer>
+        </div>
+      </section>
+
+      <section id="instruction" class="oli-sample" aria-labelledby="instruction-label">
+        <p id="instruction-label" class="oli-sample-label">05 / ADD INSTRUCTION &amp; NEEDS INPUT</p>
+        <div class="oli-pair">
+          <article class="oli-input-card">
+            <button class="oli-close" aria-label="閉じる">×</button>
+            <span class="oli-input-kicker is-blue">ADD INSTRUCTION</span>
+            <h2>実行内容に指示を追加</h2>
+            <p>推奨候補を選ぶか、自分の言葉で指示を書けます。</p>
+            <div class="oli-suggestion-block"><small>おすすめ</small><div class="oli-suggestions"><button><span>＋</span> 出典URLを必ず付ける</button><button><span>＋</span> 重要な3点を先に要約する</button><button><span>＋</span> 比較表を最後に追加する</button></div></div>
+            <label class="oli-input"><span>追加する指示</span><textarea rows="4" placeholder="追加したい条件や仕上がりを入力してください"></textarea><small>0 / 240</small></label>
+            <button class="oli-submit">指示を追加して実行 <b>→</b></button>
+          </article>
+          <article class="oli-input-card">
+            <button class="oli-close" aria-label="閉じる">×</button>
+            <span class="oli-input-kicker">ONE QUESTION</span>
+            <h2>開催日時を選ぶか入力してください</h2>
+            <p>推奨候補から選ぶか、候補にない内容を自分で入力できます。</p>
+            <div class="oli-options"><button><span>月曜 10:00–10:30</span><b>選択して実行 →</b></button><button><span>月曜 16:00–16:30</span><b>選択して実行 →</b></button><button><span>火曜 11:00–11:30</span><b>選択して実行 →</b></button></div>
+            <div class="oli-divider"><span>または</span></div>
+            <label class="oli-input"><span>自分で入力</span><textarea rows="2" placeholder="開催日時を入力してください"></textarea></label>
+            <button class="oli-submit">この内容で実行 <b>→</b></button>
+          </article>
+        </div>
+      </section>
+
+      <section id="evidence" class="oli-sample" aria-labelledby="evidence-label">
+        <p id="evidence-label" class="oli-sample-label">06 / EVIDENCE DIALOG</p>
+        <div class="oli-dialog-stage">
+          <article class="oli-dialog" role="dialog" aria-label="Actionの根拠と文脈">
+            <header><div><small>ACTION EVIDENCE</small><h2>何を、なぜ行うのか</h2></div><button aria-label="閉じる">×</button></header>
+            <div class="oli-summaries">
+              <section><small>TASK SUMMARY</small><h3>どのようなタスクか</h3><p>あなたが「ハッカソンの受賞例を5件調べて月曜までに共有する」を進めます。出典付きの調査メモを作成し、外部公開はしません。</p></section>
+              <section><small>CONTEXT SUMMARY</small><h3>どの文脈で生まれたか</h3><p>Meeting「Build Week 作戦会議」で具体的な依頼として明示されました。関連する2件の会話を照合しています。</p></section>
+            </div>
+            <div class="oli-reason"><b>WHY OPEN LOOP INBOX SHOWED THIS</b><p>2件を統合。後の会話にある具体的な件数と期限を採用しました。</p></div>
+            <small>RAW EVIDENCE</small><h3>会話の原文</h3>
+            <div class="oli-timeline">
+              <article><span class="oli-source oli-chatgpt">C</span><div><small>ChatGPT · 今日 09:42</small><strong>ハッカソンの勝ち筋を相談</strong><q>過去の受賞例を調べて、デモの見せ方を参考にしたい。</q><b>INTENT</b></div></article>
+              <article><span class="oli-source oli-meeting">M</span><div><small>Meeting · 今日 11:18</small><strong>Build Week 作戦会議</strong><q>ハッカソンの受賞例を5件、月曜までにまとめておこう。</q><b>EXPLICIT</b></div></article>
+            </div>
+            <div class="oli-payload"><small>EXECUTION PREVIEW</small><strong>Demo Codex Research</strong><p>5件の出典付き調査メモを作成します。外部公開はしません。</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="complete" class="oli-sample" aria-labelledby="complete-label">
+        <p id="complete-label" class="oli-sample-label">07 / COMPLETE &amp; RECEIPTS</p>
+        <div class="oli-shell">
+          <header class="oli-topbar">
+            <a class="oli-brand" href="#start"><span class="oli-brand-mark">OL</span><span>OPEN LOOP INBOX</span></a>
+            <button class="oli-reset">Reset</button>
+          </header>
+          <section class="oli-complete">
+            <p class="oli-eyebrow"><span>04</span> RESOLVED</p>
+            <div class="oli-complete-mark">✓</div>
+            <h2>Open loops, closed.</h2>
+            <p>3件の判断が完了しました。すべての操作にReceiptを残しています。</p>
+            <div class="oli-receipts">
+              <article><span class="is-success">✓</span><div><small>Executed · 13:42</small><h3>ハッカソンの受賞例を5件調べる</h3><p>出典付き調査メモを作成しました。</p></div><b>Demo Codex Research</b></article>
+              <article><span class="is-success">✓</span><div><small>Executed · 13:43</small><h3>Build Weekの振り返り時間を確保する</h3><p>自分用の仮予定を作成しました。</p></div><b>Demo Calendar</b></article>
+              <article><span>×</span><div><small>Dismissed · 13:44</small><h3>YukiさんへデモURLを共有する</h3><p>今回は対応しない判断を記録しました。</p></div><b>Demo Gmail</b></article>
+            </div>
+            <div class="oli-completed-proof"><small>自動的に除外した完了済みAction</small><strong>カードのキーボード操作テストを追加する</strong><p>Codexの実行結果を完了証拠として検出したため、レビュー対象から除外しました。</p></div>
+            <div class="oli-complete-actions"><button class="oli-secondary">直前の判断を取り消す</button><button class="oli-primary is-compact">もう一度試す <b>↻</b></button></div>
+          </section>
+          <footer class="oli-footer"><span>EVERY OPEN LOOP, ONE INBOX.</span><span>Sample data only · No external writes</span></footer>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

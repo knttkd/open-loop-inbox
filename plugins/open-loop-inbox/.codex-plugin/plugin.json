@@ -1,0 +1,27 @@
+{
+  "name": "open-loop-inbox",
+  "version": "0.1.0+codex.20260718064050",
+  "description": "\u4f1a\u8b70\u3001ChatGPT\u3001Codex\u306b\u6563\u3089\u3070\u3063\u305f\u672a\u5b8c\u4e86Action\u3092\u3001\u6839\u62e0\u4ed8\u304d\u3067\u56de\u53ce\u30fb\u7167\u5408\u30fb\u5b9f\u884c\u3059\u308bPlugin\u3002",
+  "author": {
+    "name": "Open Loop Inbox Team"
+  },
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Open Loop Inbox",
+    "shortDescription": "\u4f1a\u8a71\u3092\u6a2a\u65ad\u3057\u3066\u3001\u4eca\u5224\u65ad\u3059\u3079\u304dAction\u3060\u3051\u3092\u63d0\u793a\u3057\u307e\u3059\u3002",
+    "longDescription": "Codex\u5c65\u6b74\u3068\u660e\u793a\u30a4\u30f3\u30dd\u30fc\u30c8\u3057\u305f\u4f1a\u8a71\u304b\u3089Open Loop\u3092\u56de\u53ce\u3057\u3001\u91cd\u8907\u30fb\u5b8c\u4e86\u30fb\u4e0d\u8db3\u60c5\u5831\u3092\u7167\u5408\u3002\u627f\u8a8d\u3055\u308c\u305f\u4f4e\u30ea\u30b9\u30afAction\u3092\u5b9f\u884c\u3057\u3066Receipt\u3092\u6b8b\u3057\u307e\u3059\u3002",
+    "developerName": "Open Loop Inbox Team",
+    "category": "Productivity",
+    "capabilities": [
+      "Codex history",
+      "Evidence reconciliation",
+      "Approval inbox",
+      "MCP Apps UI experiment"
+    ],
+    "defaultPrompt": [
+      "Use $open-loop-inbox in sample mode and show the three Actions.",
+      "Call show_open_loop_actions and display the MCP UI experiment."
+    ]
+  }
+}
