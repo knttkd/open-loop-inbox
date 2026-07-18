@@ -5,7 +5,7 @@ import { reconcileCandidates } from "../lib/open-loop/reconcile";
 import { sampleCandidates, sampleSourceNames } from "../lib/open-loop/sample";
 import type { ActionProposal, ActionReceipt } from "../lib/open-loop/types";
 
-type Phase = "start" | "onboarding" | "onboarding-complete" | "analyzing" | "review" | "complete";
+type Phase = "onboarding" | "onboarding-complete" | "analyzing" | "review" | "complete";
 type Drag = { x: number; y: number; active: boolean };
 type Snapshot = { queue: ActionProposal[]; receipts: ActionReceipt[] };
 type InputMode = "needs-input" | "instruction" | "onboarding-instruction";
@@ -51,11 +51,7 @@ const onboardingSteps: OnboardingStep[] = [
     sentences: [
       { before: "Open Loop Inboxは、Codexの複数スレッドに残った依頼やネクストアクションを回収し、後続の会話と実行結果まで照合するInboxです。" },
       { before: "同じ依頼は一つにまとめ、すでに終わった作業は除外し、条件が足りない作業は一問だけ確認します。" },
-      {
-        before: "これは、ToDoを増やすAIではありません。",
-        emphasis: "判断する件数を減らし、残った仕事をその場で終わらせるAI",
-        after: "です。",
-      },
+      { before: "実行方法としては、マシン上でのローカルホスト、またはCodex内のプラグインを通しての実行を想定しています。" },
     ],
   },
   {
@@ -209,7 +205,7 @@ function ReviewCard({
 }
 
 export default function OpenLoopInbox() {
-  const [phase, setPhase] = useState<Phase>("start");
+  const [phase, setPhase] = useState<Phase>("onboarding");
   const [analysisStep, setAnalysisStep] = useState(0);
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [queue, setQueue] = useState<ActionProposal[]>(analysis.proposals);
@@ -253,12 +249,12 @@ export default function OpenLoopInbox() {
     let restoreTimer: number | undefined;
     try {
       const parsed = JSON.parse(saved) as {
-        phase: Phase;
+        phase: Phase | "start";
         queue: ActionProposal[];
         receipts: ActionReceipt[];
       };
       restoreTimer = window.setTimeout(() => {
-        setPhase(parsed.phase);
+        setPhase(parsed.phase === "start" ? "onboarding" : parsed.phase);
         setQueue(parsed.queue);
         setReceipts(parsed.receipts);
       }, 0);
@@ -343,14 +339,6 @@ export default function OpenLoopInbox() {
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [detailOpen, helpOpen, inputOpen, executing, onboardingFeedbackOpen]);
-
-  function startSample() {
-    setPhase("onboarding");
-    setAnalysisStep(0);
-    setOnboardingStep(0);
-    setOnboardingFeedbackOpen(false);
-    setOnboardingSettling(false);
-  }
 
   function finishOnboarding() {
     setInputMode(null);
@@ -557,7 +545,7 @@ export default function OpenLoopInbox() {
       instructionTransitionTimerRef.current = null;
     }
     executingRef.current = false;
-    setPhase("start");
+    setPhase("onboarding");
     setOnboardingStep(0);
     setQueue(analysis.proposals);
     setReceipts([]);
@@ -795,40 +783,9 @@ export default function OpenLoopInbox() {
         </button>
         <div className="topbar-actions">
           <span className="demo-pill"><i /> JUDGE SANDBOX</span>
-          {phase !== "start" && <button className="text-button" onClick={reset}>Reset</button>}
+          {phase !== "onboarding" && <button className="text-button" onClick={reset}>Reset</button>}
         </div>
       </header>
-
-      {phase === "start" && (
-        <section className="start-view">
-          <div className="eyebrow"><span>01</span> RECOVER · RECONCILE · DECIDE · EXECUTE</div>
-          <h1>会話に残った<br /><em>やり残し</em>だけを。</h1>
-          <p className="lead">
-            会議、ChatGPT、Codexを横断して、重複と完了済みを整理。
-            あなたが今判断すべきActionだけを、一つのInboxに集めます。
-          </p>
-          <button className="primary-cta" onClick={startSample}>
-            <span>サンプルの1日を試す</span><b>→</b>
-          </button>
-          <p className="cta-note">ログイン不要 · 実データ不使用 · 約2分</p>
-
-          <div className="source-preview" aria-label="読み込むサンプルソース">
-            <div><span className="source-icon meeting">M</span><strong>Meeting</strong><small>1 transcript</small></div>
-            <div className="connector" />
-            <div><span className="source-icon chatgpt">C</span><strong>ChatGPT</strong><small>2 conversations</small></div>
-            <div className="connector" />
-            <div><span className="source-icon codex">X</span><strong>Codex</strong><small>2 threads</small></div>
-          </div>
-          <aside className="start-proof">
-            <span>THE PROMISE</span>
-            <strong>7</strong>
-            <p>candidate actions</p>
-            <div className="proof-arrow">↓</div>
-            <strong className="accent-number">3</strong>
-            <p>decisions that matter</p>
-          </aside>
-        </section>
-      )}
 
       {phase === "analyzing" && (
         <section className="analysis-view" aria-live="polite">
