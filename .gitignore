@@ -43,3 +43,6 @@ next-env.d.ts
 /outputs/
 /work/
 /.open-loop-inbox/
+
+# Local Codex instructions may contain personal configuration
+/AGENTS.md
