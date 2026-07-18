@@ -47,9 +47,15 @@ const onboardingSteps: OnboardingStep[] = [
     direction: null,
     label: "はじめに",
     kicker: "OPEN LOOP INBOX",
-    title: "チャット毎に散らばったToDo終わらせましょう。",
+    title: "このサービスは？",
     sentences: [
-      { before: "セッションを横断して確認し、終わっていないタスクの表示・実行指示がまとめてできます。" },
+      { before: "Open Loop Inboxは、Codexの複数スレッドに残った依頼やネクストアクションを回収し、後続の会話と実行結果まで照合するInboxです。" },
+      { before: "同じ依頼は一つにまとめ、すでに終わった作業は除外し、条件が足りない作業は一問だけ確認します。" },
+      {
+        before: "これは、ToDoを増やすAIではありません。",
+        emphasis: "判断する件数を減らし、残った仕事をその場で終わらせるAI",
+        after: "です。",
+      },
     ],
   },
   {

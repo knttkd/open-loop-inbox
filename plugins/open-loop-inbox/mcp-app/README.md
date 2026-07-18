@@ -1,12 +1,17 @@
 # MCP UI capability experiment
 
-`show_open_loop_actions`が3件のサンプルActionを返し、MCP Apps対応ホストではカードUIを表示する実験です。v3ではチャット内を起動ボタンだけに抑え、CodexのサイドバーでActionカードを操作します。
+`show_open_loop_actions`が3件のサンプルActionを返し、MCP Apps対応ホストではデモサイトと共通のAction Deck UIを表示する実験です。チャット内を起動ボタンだけに抑え、CodexのサイドバーでActionカードを操作します。
+
+`scan_open_loop_history`は、利用者が明示した一つの絶対Workspaceパスだけを対象に、非アーカイブのCodexタスクを最大20件（指定時は最大100件）まで読取し、未完了のAction候補へ照合します。現在のscanタスクIDを取得できない場合は、本文を読まずに停止します。
 
 ## 安全境界
 
 - 実履歴は読みません。
 - Actionを実行・保存しません。
 - Toolは読取専用です。
+- Live Scanは現在のscanタスクを除外してから本文を読みます。
+- コマンド・ツール・ファイル出力は、Action候補のEvidence本文として返しません。
+- Live ScanでもActionの実行・Receiptの保存はしません。
 - UI非対応ホストでも、同じAction一覧をテキストと`structuredContent`で確認できます。
 
 ## 自動検証
@@ -35,6 +40,14 @@ node --test tests/plugin.test.mjs
 6. 「サイドバーで開く」を押し、Actionカードが右サイドバーへ表示されることを確認します。
 7. Evidenceを開閉し、表示領域の高さが内容に追従するか確認します。
 8. 「チャットに戻す」を押し、サイドバーが閉じてチャット内の起動ボタンへ戻ることを確認します。
+
+実履歴を確認する場合は、対象を絶対パスで限定して依頼します。
+
+```text
+Use $open-loop-inbox. scan_open_loop_history で /absolute/path/to/workspace の最近のCodex履歴を読み、未完了Actionだけを表示して。
+```
+
+明示承認なしに、候補の実行やReceipt保存は行いません。
 
 カードUIが表示されなくてもTool呼出しが成功し、3件のActionがテキストで表示されれば、MCP接続とFallbackは成功です。UI表示可否はホスト能力の検証結果として別に扱います。
 

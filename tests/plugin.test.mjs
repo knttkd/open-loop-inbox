@@ -59,7 +59,7 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
       jsonrpc: "2.0",
       id: 3,
       method: "resources/read",
-      params: { uri: "ui://open-loop-inbox/action-cards-v3.html" },
+      params: { uri: "ui://open-loop-inbox/action-cards-v4.html" },
     },
     {
       jsonrpc: "2.0",
@@ -70,20 +70,33 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
   ]);
 
   const initialize = responses.find((response) => response.id === 1).result;
-  const tool = responses.find((response) => response.id === 2).result.tools[0];
+  const tools = responses.find((response) => response.id === 2).result.tools;
+  const tool = tools[0];
+  const liveScanTool = tools.find((candidate) => candidate.name === "scan_open_loop_history");
   const resource = responses.find((response) => response.id === 3).result.contents[0];
   const toolResult = responses.find((response) => response.id === 4).result;
 
   assert.deepEqual(initialize.capabilities, { resources: {}, tools: {} });
-  assert.equal(tool._meta.ui.resourceUri, "ui://open-loop-inbox/action-cards-v3.html");
+  assert.equal(tool._meta.ui.resourceUri, "ui://open-loop-inbox/action-cards-v4.html");
   assert.equal(tool._meta["openai/outputTemplate"], tool._meta.ui.resourceUri);
   assert.equal(tool.annotations.readOnlyHint, true);
+  assert.equal(liveScanTool.inputSchema.properties.workspace.type, "string");
+  assert.equal(liveScanTool.inputSchema.properties.limit.maximum, 100);
+  assert.equal(liveScanTool.annotations.readOnlyHint, true);
   assert.equal(resource.mimeType, "text/html;profile=mcp-app");
   assert.match(resource.text, /ui\/notifications\/tool-result/);
   assert.match(resource.text, /ui\/notifications\/size-changed/);
   assert.match(resource.text, /ui\/request-display-mode/);
   assert.match(resource.text, /requestDisplayMode/);
   assert.match(resource.text, /main \{ width: 100%/);
+  assert.match(resource.text, /--ink: #1d2130/);
+  assert.match(resource.text, /card-type-research/);
+  assert.match(resource.text, /STRONGEST EVIDENCE/);
+  assert.match(resource.text, /PRACTICE WITH A REAL CARD/);
+  assert.match(resource.text, /右スワイプは「実行」/);
+  assert.match(resource.text, /左スワイプは「見送る」/);
+  assert.match(resource.text, /上スワイプは「指示を追加」/);
+  assert.match(resource.text, /練習をスキップ/);
   assert.match(resource.text, /サイドバーで開く/);
   assert.match(resource.text, /data-display-mode="inline"/);
   assert.match(resource.text, /if \(displayMode === "inline"\)/);

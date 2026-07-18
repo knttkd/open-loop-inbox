@@ -1,6 +1,6 @@
 {
   "name": "open-loop-inbox",
-  "version": "0.1.0+codex.20260717164030",
+  "version": "0.1.0+codex.20260718064050",
   "description": "\u4f1a\u8b70\u3001ChatGPT\u3001Codex\u306b\u6563\u3089\u3070\u3063\u305f\u672a\u5b8c\u4e86Action\u3092\u3001\u6839\u62e0\u4ed8\u304d\u3067\u56de\u53ce\u30fb\u7167\u5408\u30fb\u5b9f\u884c\u3059\u308bPlugin\u3002",
   "author": {
     "name": "Open Loop Inbox Team"
