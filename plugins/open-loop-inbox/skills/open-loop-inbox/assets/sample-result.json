@@ -1,0 +1,77 @@
+{
+  "summary": {
+    "sources": 5,
+    "candidates": 7,
+    "merged": 2,
+    "completed": 1,
+    "lowConfidenceSuppressed": 1,
+    "review": 3
+  },
+  "proposals": [
+    {
+      "id": "proposal-cursor-award-research",
+      "title": "Cursorの受賞例を5件調べて月曜までに共有する",
+      "type": "Research",
+      "status": "Ready",
+      "risk": "Low",
+      "confidence": 97,
+      "executor": "Codex Research",
+      "effect": "5件の出典付き調査メモを作成します。外部公開はしません。",
+      "reconciliationReason": "会議とChatGPTの2件を統合し、後の会議にある件数と期限を採用しました。",
+      "evidence": [
+        {
+          "source": "ChatGPT",
+          "quote": "Cursorの過去の受賞例を調べて、デモの見せ方を参考にしたい。"
+        },
+        {
+          "source": "Meeting",
+          "quote": "Cursorの受賞例を5件、月曜までにまとめておこう。"
+        }
+      ]
+    },
+    {
+      "id": "proposal-retro-calendar",
+      "title": "Build Weekの振り返り時間を確保する",
+      "type": "Calendar hold",
+      "status": "Needs input",
+      "risk": "Medium",
+      "confidence": 88,
+      "executor": "Calendar Hold",
+      "effect": "自分用の30分の仮予定を作成します。招待や通知は送りません。",
+      "missingField": "開催日時",
+      "evidence": [
+        {
+          "source": "Meeting",
+          "quote": "終わったら30分だけ振り返りの時間を取ろう。日時はあとで決める。"
+        }
+      ]
+    },
+    {
+      "id": "proposal-yuki-demo-followup",
+      "title": "YukiさんへデモURLと試してほしい点を送る",
+      "type": "Email draft",
+      "status": "Ready",
+      "risk": "Medium",
+      "confidence": 94,
+      "executor": "Gmail Draft",
+      "effect": "URLと確認ポイントを含むメール下書きを作成します。送信はしません。",
+      "reconciliationReason": "会議とChatGPTの2件を統合し、後の会議にある確認ポイントを採用しました。",
+      "evidence": [
+        {
+          "source": "ChatGPT",
+          "quote": "サイトができたらYukiさんにURLを共有するのを忘れないようにしたい。"
+        },
+        {
+          "source": "Meeting",
+          "quote": "デプロイ後、YukiさんにURLと、特にスワイプを試してほしいって送ろう。"
+        }
+      ]
+    }
+  ],
+  "completed": [
+    {
+      "title": "カードのキーボード操作テストを追加する",
+      "reason": "Codexの実行結果とテスト成功を強い完了証拠として採用しました。"
+    }
+  ]
+}

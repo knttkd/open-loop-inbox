@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ja" data-display-mode="inline">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html { width: 100%; }
+      body {
+        margin: 0;
+        width: 100%;
+        color: #172033;
+        background:
+          radial-gradient(circle at 10% 10%, rgba(108, 99, 255, .16), transparent 32%),
+          radial-gradient(circle at 90% 90%, rgba(255, 110, 86, .13), transparent 32%),
+          #f4f6fb;
+      }
+      main { width: 100%; padding: clamp(10px, 2.2vw, 18px); }
+      html[data-display-mode="inline"] body { background: transparent; }
+      html[data-display-mode="inline"] main { padding: 8px 0; }
+      .launcher { width: 100%; }
+      button.launcher-button {
+        width: 100%;
+        min-height: 56px;
+        padding: 0 22px;
+        border: 1px solid rgba(103, 92, 246, .58);
+        color: #fff;
+        background: linear-gradient(110deg, #5046db, #7065ff 58%, #5b50e6);
+        box-shadow: 0 10px 28px rgba(80, 70, 219, .24), inset 0 1px rgba(255, 255, 255, .24);
+        font-size: 14px;
+        letter-spacing: .01em;
+      }
+      button.launcher-button:hover { filter: brightness(1.06); }
+      button.launcher-button[data-state="unsupported"] { background: #6d7280; border-color: #6d7280; }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .appbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .eyebrow {
+        margin: 0;
+        color: #665cf6;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .16em;
+      }
+      .card {
+        position: relative;
+        overflow: hidden;
+        padding: clamp(22px, 4vw, 36px);
+        border: 1px solid rgba(255, 255, 255, .82);
+        border-radius: clamp(22px, 3.5vw, 30px);
+        background: rgba(255, 255, 255, .9);
+        box-shadow: 0 24px 60px rgba(35, 42, 72, .16);
+      }
+      .topline { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+      .status, .risk {
+        display: inline-flex;
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 750;
+      }
+      .status { color: #4c43d6; background: #ebe9ff; }
+      .risk { color: #697083; background: #eef0f5; }
+      h1 { margin: 22px 0 12px; font-size: clamp(24px, 5vw, 34px); line-height: 1.18; }
+      .summary { margin: 0; color: #535d72; font-size: 15px; line-height: 1.75; }
+      details { margin: 22px 0 0; border-top: 1px solid #e6e9f1; padding-top: 16px; }
+      summary { cursor: pointer; color: #4e5669; font-size: 13px; font-weight: 700; }
+      details p { color: #5f687c; font-size: 13px; line-height: 1.7; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; margin-top: 22px; }
+      button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 999px;
+        color: #252b3a;
+        background: #edf0f6;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      button.primary { color: white; background: #675cf6; }
+      button.expand {
+        min-height: 38px;
+        padding: 0 15px;
+        border: 1px solid rgba(103, 92, 246, .25);
+        color: #5148d7;
+        background: #f1f0ff;
+        white-space: nowrap;
+      }
+      button.expand:hover { background: #e8e6ff; }
+      button:focus-visible { outline: 3px solid rgba(103, 92, 246, .28); outline-offset: 3px; }
+      button:disabled { cursor: wait; opacity: .62; }
+      .counter { margin: 14px 0 0; text-align: center; color: #7a8293; font-size: 11px; }
+      .empty { padding: 54px 24px; text-align: center; }
+      .empty .eyebrow { margin-bottom: 10px; }
+      .empty h1 { margin-bottom: 8px; }
+      @media (prefers-reduced-motion: no-preference) {
+        .card { animation: arrive .34s ease both; }
+        @keyframes arrive { from { opacity: 0; transform: translateY(8px) scale(.99); } }
+      }
+      @media (prefers-color-scheme: dark) {
+        body { color: #eef1f8; background: #151824; }
+        .card { border-color: #34394b; background: #222635; box-shadow: 0 24px 60px rgba(0, 0, 0, .28); }
+        .summary, details p { color: #b6bdcd; }
+        details { border-color: #393e50; }
+        summary { color: #d3d8e5; }
+        button { color: #e7eaf2; background: #373c4e; }
+        button.expand { color: #dcd9ff; background: #343153; border-color: #4c477b; }
+      }
+      @media (max-width: 560px) {
+        .appbar { align-items: flex-start; }
+        .actions { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main id="root" aria-live="polite">
+      <section class="launcher">
+        <button class="launcher-button" data-display-mode type="button">サイドバーで開く&nbsp; ↗</button>
+      </section>
+    </main>
+    <script type="module">
+      const root = document.getElementById("root");
+      let actions = [];
+      let index = 0;
+      let displayMode = window.openai?.displayMode ?? "inline";
+      let availableDisplayModes = [];
+      let hostConnected = false;
+      let modeStatus = { state: "", text: "" };
+      let modeRequestPending = false;
+      let requestSequence = 0;
+      let resizeFrame = 0;
+      let lastReportedSize = "";
+      const pendingRequests = new Map();
+
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+      })[char]);
+
+      function postToHost(message) {
+        window.parent.postMessage(message, "*");
+      }
+
+      function notifyHost(method, params = {}) {
+        postToHost({ jsonrpc: "2.0", method, params });
+      }
+
+      function requestHost(method, params, timeout = 1800) {
+        const id = `open-loop-inbox-${++requestSequence}`;
+        postToHost({ jsonrpc: "2.0", id, method, params });
+        return new Promise((resolve, reject) => {
+          const timer = window.setTimeout(() => {
+            pendingRequests.delete(id);
+            reject(new Error(`${method} timed out`));
+          }, timeout);
+          pendingRequests.set(id, { resolve, reject, timer });
+        });
+      }
+
+      function applyHostContext(context = {}) {
+        if (context.displayMode) displayMode = context.displayMode;
+        if (Array.isArray(context.availableDisplayModes)) {
+          availableDisplayModes = context.availableDisplayModes;
+        }
+        render();
+      }
+
+      function measureAndNotifyHeight() {
+        resizeFrame = 0;
+        const bodyBounds = document.body.getBoundingClientRect();
+        const width = Math.ceil(bodyBounds.width);
+        const height = Math.ceil(bodyBounds.height);
+        const nextSize = `${width}x${height}`;
+        if (nextSize === lastReportedSize) return;
+        lastReportedSize = nextSize;
+        if (hostConnected) notifyHost("ui/notifications/size-changed", { width, height });
+        window.openai?.notifyIntrinsicHeight?.(height);
+      }
+
+      function scheduleHeightUpdate() {
+        if (resizeFrame) cancelAnimationFrame(resizeFrame);
+        resizeFrame = requestAnimationFrame(measureAndNotifyHeight);
+      }
+
+      async function connectMcpApp() {
+        try {
+          const result = await requestHost("ui/initialize", {
+            protocolVersion: "2026-01-26",
+            appInfo: { name: "Open Loop Inbox", version: "0.3.0" },
+            appCapabilities: { availableDisplayModes: ["inline", "fullscreen"] },
+          });
+          hostConnected = true;
+          lastReportedSize = "";
+          notifyHost("ui/notifications/initialized");
+          applyHostContext(result?.hostContext);
+        } catch {
+          hostConnected = false;
+          scheduleHeightUpdate();
+        }
+      }
+
+      async function requestDisplayMode() {
+        const targetMode = displayMode === "fullscreen" ? "inline" : "fullscreen";
+        modeRequestPending = true;
+        modeStatus = { state: "", text: targetMode === "fullscreen" ? "サイドバーを開いています…" : "チャットへ戻しています…" };
+        render();
+
+        try {
+          if (availableDisplayModes.length > 0 && !availableDisplayModes.includes(targetMode)) {
+            throw new Error(`${targetMode} is not available`);
+          }
+          let result;
+          if (window.openai?.requestDisplayMode) {
+            result = await window.openai.requestDisplayMode({ mode: targetMode });
+          } else if (hostConnected) {
+            result = await requestHost("ui/request-display-mode", { mode: targetMode });
+          } else {
+            throw new Error("Display mode API is unavailable");
+          }
+
+          displayMode = result?.mode ?? targetMode;
+          const granted = displayMode === targetMode;
+          modeStatus = granted
+            ? { state: "success", text: displayMode === "fullscreen" ? "サイドバーで開きました。" : "チャットへ戻りました。" }
+            : { state: "unsupported", text: `Codexは${targetMode === "fullscreen" ? "サイドバー" : "チャット内"}表示を許可しませんでした。` };
+        } catch {
+          modeStatus = { state: "unsupported", text: targetMode === "fullscreen" ? "サイドバーを開けませんでした。もう一度試す" : "チャットへ戻せませんでした。もう一度試す" };
+        }
+        modeRequestPending = false;
+        render();
+      }
+
+      function render() {
+        document.documentElement.dataset.displayMode = displayMode;
+        if (displayMode === "inline") {
+          const buttonLabel = modeRequestPending
+            ? "サイドバーを開いています…"
+            : modeStatus.state === "unsupported"
+              ? "サイドバーを開けませんでした · 再試行"
+              : "サイドバーで開く&nbsp; ↗";
+          root.innerHTML = `
+            <section class="launcher">
+              <button class="launcher-button" data-display-mode data-state="${escapeHtml(modeStatus.state)}" type="button" ${modeRequestPending ? "disabled" : ""}>${buttonLabel}</button>
+              <span class="visually-hidden" role="status">${escapeHtml(modeStatus.text)}</span>
+            </section>`;
+          scheduleHeightUpdate();
+          return;
+        }
+        if (actions.length === 0 || index >= actions.length) {
+          const title = actions.length === 0 ? "Actionを読み込み中" : "確認完了";
+          const summary = actions.length === 0 ? "MCPホストから構造化結果を待っています。" : "この実験用Actionはすべて確認しました。";
+          root.innerHTML = `<section class="card empty"><p class="eyebrow">OPEN LOOP INBOX</p><h1>${title}</h1><p class="summary">${summary}</p><button class="expand" data-display-mode type="button">← チャットに戻す</button></section>`;
+          scheduleHeightUpdate();
+          return;
+        }
+        const action = actions[index];
+        root.innerHTML = `
+          <section class="card">
+            <div class="appbar">
+              <p class="eyebrow">ACTION REVIEW</p>
+              <button class="expand" data-display-mode type="button" ${modeRequestPending ? "disabled" : ""}>← チャットに戻す</button>
+            </div>
+            <div class="topline"><span class="status">${escapeHtml(action.status)}</span><span class="risk">Risk: ${escapeHtml(action.risk)}</span></div>
+            <h1>${escapeHtml(action.title)}</h1>
+            <p class="summary">${escapeHtml(action.summary)}</p>
+            <details><summary>Evidenceを確認</summary><p>${escapeHtml(action.evidenceSummary)}</p></details>
+            <div class="actions">
+              <button data-choice="dismiss">閉じる</button>
+              <button data-choice="next">次へ</button>
+              <button class="primary" data-choice="accept">${escapeHtml(action.suggestedAction)}</button>
+            </div>
+            <p class="counter">${index + 1} / ${actions.length} · UI capability experiment</p>
+          </section>`;
+        scheduleHeightUpdate();
+      }
+
+      function acceptToolResult(result) {
+        const nextActions = result?.structuredContent?.actions;
+        if (!Array.isArray(nextActions)) return;
+        actions = nextActions;
+        index = 0;
+        render();
+      }
+
+      root.addEventListener("click", (event) => {
+        const displayButton = event.target.closest("button[data-display-mode]");
+        if (displayButton) {
+          void requestDisplayMode();
+          return;
+        }
+        const button = event.target.closest("button[data-choice]");
+        if (!button) return;
+        index += 1;
+        render();
+      });
+
+      root.addEventListener("toggle", scheduleHeightUpdate, true);
+
+      window.addEventListener("message", (event) => {
+        if (event.source !== window.parent) return;
+        const message = event.data;
+        if (!message || message.jsonrpc !== "2.0") return;
+        if (message.id && pendingRequests.has(message.id)) {
+          const request = pendingRequests.get(message.id);
+          pendingRequests.delete(message.id);
+          clearTimeout(request.timer);
+          if (message.error) request.reject(new Error(message.error.message ?? "Host request failed"));
+          else request.resolve(message.result);
+          return;
+        }
+        if (message.method === "ui/notifications/host-context-changed") {
+          applyHostContext(message.params);
+          return;
+        }
+        if (message.method === "ui/notifications/tool-result") acceptToolResult(message.params);
+      }, { passive: true });
+
+      window.addEventListener("openai:set_globals", (event) => {
+        const globals = event.detail?.globals;
+        if (globals?.displayMode) displayMode = globals.displayMode;
+        render();
+      }, { passive: true });
+
+      const resizeObserver = new ResizeObserver(scheduleHeightUpdate);
+      resizeObserver.observe(document.body);
+
+      if (window.openai?.toolOutput) acceptToolResult({ structuredContent: window.openai.toolOutput });
+      void connectMcpApp();
+      scheduleHeightUpdate();
+    </script>
+  </body>
+</html>

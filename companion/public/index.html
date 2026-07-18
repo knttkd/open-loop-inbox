@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open Loop Inbox Companion</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">LOCAL COMPANION</p>
+        <h1>Codexのやり残しを、<br />ローカルで整理する。</h1>
+        <p class="lead">最初にタスク名と更新日時だけを取得します。本文は、選んだタスクだけ読み取ります。</p>
+        <div class="privacy">履歴はこの端末内だけで処理され、外部サーバーへ送信されません。</div>
+      </header>
+
+      <section class="panel" aria-labelledby="workspace-heading">
+        <div class="section-heading">
+          <div>
+            <p class="step">STEP 1</p>
+            <h2 id="workspace-heading">対象Workspace</h2>
+          </div>
+          <button id="load-button" type="button">タスク一覧を確認</button>
+        </div>
+        <code id="workspace">確認中…</code>
+        <p id="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="tasks-heading">
+        <div class="section-heading">
+          <div>
+            <p class="step">STEP 2</p>
+            <h2 id="tasks-heading">最近のタスク</h2>
+          </div>
+          <span class="count" id="count">0件</span>
+        </div>
+        <div id="tasks" class="tasks">
+          <p class="empty">一覧取得後、ここにメタデータだけ表示されます。</p>
+        </div>
+      </section>
+
+      <section class="panel details" aria-labelledby="details-heading" hidden id="details-panel">
+        <div class="section-heading">
+          <div>
+            <p class="step">SELECTED TASK</p>
+            <h2 id="details-heading"></h2>
+          </div>
+        </div>
+        <div id="messages" class="messages"></div>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
