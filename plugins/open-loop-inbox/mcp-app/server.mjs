@@ -3,10 +3,11 @@ import readline from "node:readline";
 import { scanLiveHistory } from "./live-scan.mjs";
 
 export const SERVER_NAME = "open-loop-inbox-ui";
-export const SERVER_VERSION = "0.4.0";
+export const SERVER_VERSION = "0.5.0";
 export const TOOL_NAME = "show_open_loop_actions";
 export const LIVE_SCAN_TOOL_NAME = "scan_open_loop_history";
-export const RESOURCE_URI = "ui://open-loop-inbox/action-cards-v4.html";
+export const DECISION_TOOL_NAME = "record_open_loop_decision";
+export const RESOURCE_URI = "ui://open-loop-inbox/action-cards-v5.html";
 export const RESOURCE_MIME_TYPE = "text/html;profile=mcp-app";
 
 const actions = Object.freeze([
@@ -237,6 +238,78 @@ export function liveScanToolDescriptor() {
   };
 }
 
+export function decisionToolDescriptor() {
+  return {
+    name: DECISION_TOOL_NAME,
+    title: "Record Open Loop Decision",
+    description:
+      "Record an explicit Approval Inbox decision made in the UI. This records only the decision in the current conversation; it never executes an Action, publishes content, sends a message, or writes a Receipt.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        proposalId: { type: "string" },
+        title: { type: "string" },
+        decision: { type: "string", enum: ["Approve", "Dismiss", "Edit", "Snooze"] },
+        editNote: { type: "string", maxLength: 500 },
+        workspace: { type: "string" },
+        evidenceRefs: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: { threadId: { type: "string" }, turnId: { type: ["string", "number"] } },
+            required: ["threadId"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["proposalId", "title", "decision"],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        proposalId: { type: "string" },
+        decision: { type: "string" },
+        recordedAt: { type: "string" },
+        executionAuthorized: { const: false },
+      },
+      required: ["proposalId", "decision", "recordedAt", "executionAuthorized"],
+      additionalProperties: false,
+    },
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
+    _meta: {
+      ui: { visibility: ["model", "app"] },
+      "openai/toolInvocation/invoking": "判断を記録しています…",
+      "openai/toolInvocation/invoked": "判断を記録しました。",
+    },
+  };
+}
+
+function decisionResult(arguments_) {
+  const recordedAt = new Date().toISOString();
+  const structuredContent = {
+    proposalId: arguments_.proposalId,
+    decision: arguments_.decision,
+    recordedAt,
+    executionAuthorized: false,
+  };
+  const edit = arguments_.decision === "Edit" && arguments_.editNote
+    ? " 追加指示も記録しました。"
+    : "";
+  return {
+    structuredContent,
+    content: [{
+      type: "text",
+      text: `${arguments_.decision} を「${arguments_.title}」に記録しました。外部操作・実行・Receipt保存は行っていません。${edit}`,
+    }],
+  };
+}
+
 function liveScanResult(scan) {
   const lines = scan.actions.map(
     (action, index) => `${index + 1}. [${action.status}] ${action.title}\n   ${action.effect}\n   Evidence: ${action.evidenceSummary}`,
@@ -340,7 +413,7 @@ async function handleRequest(message) {
   }
 
   if (method === "tools/list") {
-    sendResult(id, { tools: [toolDescriptor(), liveScanToolDescriptor()] });
+    sendResult(id, { tools: [toolDescriptor(), liveScanToolDescriptor(), decisionToolDescriptor()] });
     return;
   }
 
@@ -360,6 +433,16 @@ async function handleRequest(message) {
           content: [{ type: "text", text: "Live history scan could not run. Confirm the workspace path and that the current scan thread can be excluded, then try again." }],
         });
       }
+      return;
+    }
+    if (params?.name === DECISION_TOOL_NAME) {
+      const arguments_ = params?.arguments ?? {};
+      const validDecision = ["Approve", "Dismiss", "Edit", "Snooze"].includes(arguments_.decision);
+      if (!arguments_.proposalId || !arguments_.title || !validDecision) {
+        sendError(id, -32602, "proposalId, title, and a valid decision are required");
+        return;
+      }
+      sendResult(id, decisionResult(arguments_));
       return;
     }
     if (params?.name !== TOOL_NAME) {

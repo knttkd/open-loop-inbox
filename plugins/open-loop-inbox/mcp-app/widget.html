@@ -105,9 +105,19 @@
       .card-actions { display: flex; justify-content: center; gap: 14px; margin-top: 16px; }
       .card-actions button { width: 46px; height: 46px; border: 1px solid var(--stroke); border-radius: 50%; background: rgba(255, 255, 255, .85); box-shadow: 0 6px 16px rgba(60, 70, 110, .14); cursor: pointer; font-size: 18px; }
       .card-actions button:first-child { color: var(--orange); }
+      .card-actions button.snooze { color: var(--gold); }
       .card-actions button:hover { transform: translateY(-2px); }
       .card-actions .approve-action { border: 0; background: #15181f; color: white; box-shadow: 0 8px 20px rgba(21, 24, 31, .35); }
+      .card-actions button:disabled { cursor: wait; opacity: .5; transform: none; }
       .deck-hint { margin: 14px 0 0; color: var(--muted); font: 9px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
+      .decision-status { width: min(100%, 620px); margin: 16px auto 0; padding: 12px 14px; border: 1px solid rgba(63, 158, 125, .28); border-radius: 14px; background: rgba(224, 243, 229, .62); color: #356842; font-size: 11px; line-height: 1.55; text-align: center; }
+      .decision-status.error { border-color: rgba(223, 107, 69, .3); background: rgba(255, 226, 216, .66); color: #9f3219; }
+      .edit-sheet { width: min(100%, 620px); margin: 16px auto 0; padding: 17px; border: 1px solid var(--stroke); border-radius: 18px; background: rgba(255, 255, 255, .72); box-shadow: 0 14px 32px rgba(60, 70, 110, .12); }
+      .edit-sheet label { display: block; color: var(--muted); font: 800 8px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+      .edit-sheet textarea { width: 100%; min-height: 84px; margin-top: 9px; padding: 11px; border: 1px solid rgba(29, 33, 48, .12); border-radius: 13px; background: rgba(255, 255, 255, .8); color: var(--ink); font: 12px/1.55 inherit; resize: vertical; }
+      .edit-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 10px; }
+      .edit-actions button { padding: 9px 13px; border: 1px solid rgba(29, 33, 48, .18); border-radius: 99px; background: rgba(255, 255, 255, .76); cursor: pointer; font-size: 10px; font-weight: 700; }
+      .edit-actions button:last-child { border: 0; background: #15181f; color: white; }
       .mode-button { margin: 20px auto 0; display: flex; align-items: center; gap: 8px; padding: 9px 14px; border: 1px solid rgba(29, 33, 48, .18); border-radius: 99px; background: rgba(255, 255, 255, .60); color: var(--ink); cursor: pointer; font-size: 10px; font-weight: 700; }
       .onboarding-view { padding-top: 26px; }
       .practice-heading { text-align: center; }
@@ -181,6 +191,11 @@
       let onboardingInstruction = false;
       let onboardingComplete = false;
       let onboardingDraft = "";
+      let decisionPending = false;
+      let decisionStatus = "";
+      let decisionError = false;
+      let editOpen = false;
+      let editDraft = "";
       let displayMode = window.openai?.displayMode ?? "inline";
       let availableDisplayModes = [];
       let hostConnected = false;
@@ -245,7 +260,7 @@
         root.innerHTML = `<section class="launcher"><button class="launcher-button" data-display-mode data-state="${escapeHtml(modeStatus.state)}" type="button" ${modeRequestPending ? "disabled" : ""}><span>${label}</span><b>↗</b></button><span class="visually-hidden" role="status">${escapeHtml(modeStatus.text)}</span></section>`;
       }
       function renderEmpty() {
-        root.innerHTML = `<section class="app-shell empty"><div class="complete-mark">✓</div><p class="eyebrow"><span>✓</span> OPEN LOOP INBOX</p><h1>確認完了</h1><p>この実験用Actionはすべて確認しました。実行・Receipt保存は行っていません。</p><button class="mode-button" data-display-mode type="button" ${modeRequestPending ? "disabled" : ""}>← チャットに戻す</button></section>`;
+        root.innerHTML = `<section class="app-shell empty"><div class="complete-mark">✓</div><p class="eyebrow"><span>✓</span> OPEN LOOP INBOX</p><h1>確認完了</h1><p>${decisionStatus ? escapeHtml(decisionStatus) : "この実験用Actionはすべて確認しました。実行・Receipt保存は行っていません。"}</p><button class="mode-button" data-display-mode type="button" ${modeRequestPending ? "disabled" : ""}>← チャットに戻す</button></section>`;
       }
       function actionCardMarkup(action, number, extraClass = "", onboardingChoice = "") {
         const type = typeInfo[action.type] ?? { glyph: "A", label: "ACTION", className: "research" };
@@ -254,8 +269,10 @@
         const actionAttribute = onboardingChoice ? "data-onboarding-choice" : "data-choice";
         const labels = onboardingChoice
           ? { dismiss: "見送る（操作練習）", instruction: "指示を追加（操作練習）", approve: "実行（操作練習）" }
-          : { dismiss: "見送る（実験用に次のカードへ進む）", instruction: "指示を追加（実験用に次のカードへ進む）", approve: "実行を承認（実験用に次のカードへ進む）" };
+          : { dismiss: "見送る", instruction: "編集する", snooze: "後で確認する", approve: "承認する" };
         const expectedClass = (choice, className = "") => onboardingChoice === choice ? `expected-action ${className}` : className;
+        const disabled = decisionPending && !onboardingChoice ? "disabled" : "";
+        const snooze = onboardingChoice ? "" : `<button class="snooze" ${actionAttribute}="snooze" aria-label="${labels.snooze}" ${disabled}>◷</button>`;
         return `
                 <article class="action-card card-type-${type.className} ${extraClass}">
                   <header class="card-header"><div class="type-heading"><span class="type-glyph type-${type.className}">${type.glyph}</span><span class="type-chip type-${type.className}">${type.label}</span></div><div class="card-badges"><span class="status-badge ${needs}">${escapeHtml(action.status)}</span><span class="risk-badge">${escapeHtml(action.risk)} risk</span></div></header>
@@ -264,7 +281,7 @@
                   <div class="meta-row"><div><small>OWNER</small><b>${escapeHtml(action.owner)}</b></div><div><small>DUE</small><b>${escapeHtml(action.due)}</b></div><div><small>CONFIDENCE</small><b>${escapeHtml(action.confidence)}%</b></div></div>
                   <details class="evidence-box"><summary><span class="source-icon">${escapeHtml(sourceMark)}</span><span class="evidence-copy"><small>STRONGEST EVIDENCE · ${escapeHtml(action.evidenceSource)}</small><q>${escapeHtml(action.evidenceSummary)}</q></span><b class="toggle">＋</b></summary></details>
                   <p class="reconcile-note"><span>↳</span>${escapeHtml(action.reconciliationReason)}</p>
-                  <div class="card-actions"><button class="${expectedClass("dismiss", "dismiss")}" ${actionAttribute}="dismiss" aria-label="${labels.dismiss}">×</button><button class="${expectedClass("instruction", "instruction")}" ${actionAttribute}="instruction" aria-label="${labels.instruction}">↑</button><button class="approve-action ${expectedClass("approve")}" ${actionAttribute}="approve" aria-label="${labels.approve}">✓</button></div>
+                  <div class="card-actions"><button class="${expectedClass("dismiss", "dismiss")}" ${actionAttribute}="dismiss" aria-label="${labels.dismiss}" ${disabled}>×</button><button class="${expectedClass("instruction", "instruction")}" ${actionAttribute}="instruction" aria-label="${labels.instruction}" ${disabled}>↑</button>${snooze}<button class="approve-action ${expectedClass("approve")}" ${actionAttribute}="approve" aria-label="${labels.approve}" ${disabled}>✓</button></div>
                 </article>`;
       }
       function renderDeck() {
@@ -279,7 +296,9 @@
             <section class="review-view">
               <header class="review-heading"><div><p class="eyebrow"><span>✓</span> APPROVAL INBOX</p><h1>判断するのは、<em>あと${actions.length - index}件。</em></h1></div><aside class="review-summary"><b>${summary}</b>SOURCES · CANDIDATES · REVIEW</aside></header>
               <div class="deck">${actionCardMarkup(action, `0${index + 1}`)}</div>
-              <p class="deck-hint">このMCP UI実験は読み取り専用です。カード操作は実行・保存を行いません。</p>
+              ${editOpen ? `<section class="edit-sheet"><label for="edit-note">追加指示（このDecisionとともに記録されます）</label><textarea id="edit-note" data-edit-note maxlength="500" placeholder="例: 公開前に差分をもう一度確認する">${escapeHtml(editDraft)}</textarea><div class="edit-actions"><button data-edit-cancel type="button">キャンセル</button><button data-edit-submit type="button" ${editDraft.trim() ? "" : "disabled"}>指示を記録する</button></div></section>` : ""}
+              ${decisionStatus ? `<p class="decision-status ${decisionError ? "error" : ""}" role="status">${escapeHtml(decisionStatus)}</p>` : ""}
+              <p class="deck-hint">UI操作はDecisionを記録します。外部操作・実行・Receipt保存は行いません。</p>
               <button class="mode-button" data-display-mode type="button" ${modeRequestPending ? "disabled" : ""}>← チャットに戻す</button>
             </section>
           </section>`;
@@ -310,7 +329,34 @@
         else renderDeck();
         scheduleHeightUpdate();
       }
-      function acceptToolResult(result) { const output = result?.structuredContent; const nextActions = output?.actions; if (!Array.isArray(nextActions)) return; actions = nextActions; resultSource = output.source ?? "mcp-ui-experiment"; resultSummary = output.summary ?? null; index = 0; onboardingStep = 0; onboardingFeedback = false; onboardingInstruction = false; onboardingComplete = false; onboardingDraft = ""; render(); }
+      function acceptToolResult(result) { const output = result?.structuredContent; const nextActions = output?.actions; if (!Array.isArray(nextActions)) return; actions = nextActions; resultSource = output.source ?? "mcp-ui-experiment"; resultSummary = output.summary ?? null; index = 0; onboardingStep = 0; onboardingFeedback = false; onboardingInstruction = false; onboardingComplete = false; onboardingDraft = ""; decisionPending = false; decisionStatus = ""; decisionError = false; editOpen = false; editDraft = ""; render(); }
+      async function recordDecision(decision, editNote = "") {
+        const action = actions[index];
+        if (!action || decisionPending) return;
+        decisionPending = true;
+        decisionStatus = "判断を記録しています…";
+        decisionError = false;
+        render();
+        const arguments_ = { proposalId: action.id, title: action.title, decision, editNote: editNote || undefined, workspace: action.executionPreview?.target, evidenceRefs: action.evidenceRefs };
+        try {
+          const result = window.openai?.callTool
+            ? await window.openai.callTool("record_open_loop_decision", arguments_)
+            : hostConnected
+              ? await requestHost("tools/call", { name: "record_open_loop_decision", arguments: arguments_ })
+              : (() => { throw new Error("Tool calling is unavailable"); })();
+          if (result?.isError) throw new Error("Decision tool returned an error");
+          actions.splice(index, 1);
+          if (index >= actions.length) index = 0;
+          decisionStatus = `${decision} を記録しました。外部操作は実行していません。`;
+          editOpen = false;
+          editDraft = "";
+        } catch {
+          decisionStatus = "判断を記録できませんでした。もう一度試してください。";
+          decisionError = true;
+        }
+        decisionPending = false;
+        render();
+      }
       root.addEventListener("click", (event) => {
         if (event.target.closest("button[data-display-mode]")) { void requestDisplayMode(); return; }
         if (event.target.closest("button[data-onboarding-start]")) { onboardingStep = 1; render(); return; }
@@ -321,7 +367,19 @@
         if (suggestion) { onboardingDraft = suggestion.dataset.onboardingSuggestion ?? ""; render(); return; }
         const onboardingAction = event.target.closest("button[data-onboarding-choice]");
         if (onboardingAction) { if (onboardingAction.dataset.onboardingChoice === onboardingSteps[onboardingStep].choice) { onboardingFeedback = true; render(); } return; }
-        if (event.target.closest("button[data-choice]")) { index += 1; render(); }
+        if (event.target.closest("button[data-edit-cancel]")) { editOpen = false; editDraft = ""; render(); return; }
+        if (event.target.closest("button[data-edit-submit]")) { void recordDecision("Edit", editDraft.trim()); return; }
+        const choice = event.target.closest("button[data-choice]");
+        if (!choice) return;
+        if (choice.dataset.choice === "instruction") { editOpen = true; decisionStatus = ""; decisionError = false; render(); return; }
+        const decision = { approve: "Approve", dismiss: "Dismiss", snooze: "Snooze" }[choice.dataset.choice];
+        if (decision) void recordDecision(decision);
+      });
+      root.addEventListener("input", (event) => {
+        if (!event.target.matches("textarea[data-edit-note]")) return;
+        editDraft = event.target.value;
+        const submit = root.querySelector("button[data-edit-submit]");
+        if (submit) submit.disabled = !editDraft.trim();
       });
       root.addEventListener("toggle", scheduleHeightUpdate, true);
       window.addEventListener("message", (event) => {

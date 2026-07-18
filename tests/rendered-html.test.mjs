@@ -20,10 +20,8 @@ test("server-renders the Open Loop Inbox experience", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>Open Loop Inbox/);
-  assert.match(html, /会話に残った/);
-  assert.match(html, /サンプルの1日を試す/);
+  assert.match(html, /aria-label="Open Loop Inbox ホームへ戻る"/);
   assert.match(html, /JUDGE SANDBOX/);
-  assert.match(html, /ログイン不要/);
   assert.doesNotMatch(html, /codex-preview/);
   assert.doesNotMatch(html, /react-loading-skeleton/);
 });

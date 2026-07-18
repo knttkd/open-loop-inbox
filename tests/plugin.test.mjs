@@ -59,7 +59,7 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
       jsonrpc: "2.0",
       id: 3,
       method: "resources/read",
-      params: { uri: "ui://open-loop-inbox/action-cards-v4.html" },
+      params: { uri: "ui://open-loop-inbox/action-cards-v5.html" },
     },
     {
       jsonrpc: "2.0",
@@ -67,22 +67,39 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
       method: "tools/call",
       params: { name: "show_open_loop_actions", arguments: {} },
     },
+    {
+      jsonrpc: "2.0",
+      id: 5,
+      method: "tools/call",
+      params: {
+        name: "record_open_loop_decision",
+        arguments: {
+          proposalId: "proposal-1",
+          title: "サイトを公開する",
+          decision: "Approve",
+        },
+      },
+    },
   ]);
 
   const initialize = responses.find((response) => response.id === 1).result;
   const tools = responses.find((response) => response.id === 2).result.tools;
   const tool = tools[0];
   const liveScanTool = tools.find((candidate) => candidate.name === "scan_open_loop_history");
+  const decisionTool = tools.find((candidate) => candidate.name === "record_open_loop_decision");
   const resource = responses.find((response) => response.id === 3).result.contents[0];
   const toolResult = responses.find((response) => response.id === 4).result;
+  const decisionResult = responses.find((response) => response.id === 5).result;
 
   assert.deepEqual(initialize.capabilities, { resources: {}, tools: {} });
-  assert.equal(tool._meta.ui.resourceUri, "ui://open-loop-inbox/action-cards-v4.html");
+  assert.equal(tool._meta.ui.resourceUri, "ui://open-loop-inbox/action-cards-v5.html");
   assert.equal(tool._meta["openai/outputTemplate"], tool._meta.ui.resourceUri);
   assert.equal(tool.annotations.readOnlyHint, true);
   assert.equal(liveScanTool.inputSchema.properties.workspace.type, "string");
   assert.equal(liveScanTool.inputSchema.properties.limit.maximum, 100);
   assert.equal(liveScanTool.annotations.readOnlyHint, true);
+  assert.deepEqual(decisionTool.inputSchema.properties.decision.enum, ["Approve", "Dismiss", "Edit", "Snooze"]);
+  assert.equal(decisionTool.annotations.destructiveHint, false);
   assert.equal(resource.mimeType, "text/html;profile=mcp-app");
   assert.match(resource.text, /ui\/notifications\/tool-result/);
   assert.match(resource.text, /ui\/notifications\/size-changed/);
@@ -97,6 +114,8 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
   assert.match(resource.text, /左スワイプは「見送る」/);
   assert.match(resource.text, /上スワイプは「指示を追加」/);
   assert.match(resource.text, /練習をスキップ/);
+  assert.match(resource.text, /record_open_loop_decision/);
+  assert.match(resource.text, /data-edit-note/);
   assert.match(resource.text, /サイドバーで開く/);
   assert.match(resource.text, /data-display-mode="inline"/);
   assert.match(resource.text, /if \(displayMode === "inline"\)/);
@@ -105,6 +124,9 @@ test("MCP UI experiment exposes a portable resource and structured fallback", ()
   assert.equal(toolResult._meta.ui.resourceUri, tool._meta.ui.resourceUri);
   assert.equal(toolResult._meta["openai/outputTemplate"], tool._meta.ui.resourceUri);
   assert.match(toolResult.content[0].text, /確認対象のActionは3件/);
+  assert.equal(decisionResult.structuredContent.proposalId, "proposal-1");
+  assert.equal(decisionResult.structuredContent.decision, "Approve");
+  assert.equal(decisionResult.structuredContent.executionAuthorized, false);
 });
 
 test("bundled sample preserves the 7 to 3 golden path", async () => {
