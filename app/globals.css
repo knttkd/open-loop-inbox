@@ -115,6 +115,7 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
 .onboarding-intro-card:active { cursor: default; }
 .onboarding-intro-card > span { color: var(--blue); font: 900 9px var(--font-geist-mono); letter-spacing: .14em; }
 .onboarding-intro-card h3 { max-width: 390px; margin: 18px 0; font-size: clamp(30px, 3.2vw, 42px); line-height: 1.2; letter-spacing: -.045em; }
+.onboarding-intro-copy { display: grid; gap: 12px; }
 .onboarding-intro-card p { max-width: 380px; margin: 0; color: #333845; font-size: 14px; line-height: 1.9; }
 .onboarding-intro-card button { display: inline-flex; align-items: center; gap: 18px; margin-top: 34px; padding: 9px 9px 9px 21px; border: 0; border-radius: 99px; background: #15181f; color: white; cursor: pointer; font-size: 12px; font-weight: 800; }
 .onboarding-intro-card button b { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: white; color: var(--ink); font-size: 16px; }

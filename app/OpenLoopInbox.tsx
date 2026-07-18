@@ -843,7 +843,15 @@ export default function OpenLoopInbox() {
                   <section className="action-card onboarding-intro-card">
                     <span>{onboardingStepData.kicker}</span>
                     <h3>{onboardingStepData.title}</h3>
-                    <p>{onboardingStepData.sentences[0].before}</p>
+                    <div className="onboarding-intro-copy">
+                      {onboardingStepData.sentences.map((sentence, index) => (
+                        <p key={`${sentence.before}-${index}`}>
+                          {sentence.before}
+                          {sentence.emphasis && <strong>{sentence.emphasis}</strong>}
+                          {sentence.after}
+                        </p>
+                      ))}
+                    </div>
                     <button onClick={advanceOnboardingIntro}>操作を試す <b>→</b></button>
                   </section>
                 )}
